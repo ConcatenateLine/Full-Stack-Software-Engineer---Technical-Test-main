@@ -1,0 +1,484 @@
+{
+	"info": {
+		"_postman_id": "ea3c8f87-8483-4595-9d4c-1e8dff43c514",
+		"name": "API documentation",
+		"description": "# 📄 Users\n\nEs necesario realizar el set de la variable \"token\" al momento de llamar al login.\n\n---\n\n| Header | Description |\n| --- | --- |\n| `Authorization` | Bearer {{token}} |\n| Content-Type | application/json |\n|  |  |",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43702322",
+		"_collection_link": "https://testjesus-6581146.postman.co/workspace/5d5b0912-c2f1-4e96-8270-60562f80f8f4/collection/43702322-ea3c8f87-8483-4595-9d4c-1e8dff43c514?action=share&source=collection_link&creator=43702322"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Log in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response schema is valid\", function () {\r",
+									"  var schema = {\r",
+									"    type: \"object\",\r",
+									"    properties: {\r",
+									"      user: {\r",
+									"        type: \"object\",\r",
+									"        properties: {\r",
+									"          id: { type: \"number\" },\r",
+									"          firstName: { type: \"string\" },\r",
+									"          lastName: { type: \"string\" },\r",
+									"          email: { type: \"string\", format: \"email\" },\r",
+									"          status: { type: \"string\" }\r",
+									"        },\r",
+									"        required: [\"id\", \"firstName\", \"lastName\", \"email\", \"status\"]\r",
+									"      },\r",
+									"      token: { type: \"string\" }\r",
+									"    },\r",
+									"    required: [\"user\", \"token\"]\r",
+									"  };\r",
+									"\r",
+									"  var response = pm.response.json();\r",
+									"  pm.expect(tv4.validate(response, schema)).to.be.true;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"john.doe@example.com\",\r\n    \"password\": \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Gets information about the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Log out",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The `/login and /logout` endpoints let you manage information about the authenticated user."
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create user notoken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"123456789\",\n    \"phoneNumber\": \"555-1234\",\n    \"role\": \"Admin\",\n    \"address\": {\n        \"street\": \"Main St\",\n        \"number\": \"123A\",\n        \"city\": \"Oaxaca\",\n        \"postalCode\": 68000\n    },\n    \"profilePicture\": \"https://example.com/profile/john-doe.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"123456789\",\n    \"phoneNumber\": \"555-1234\",\n    \"role\": \"Admin\",\n    \"address\": {\n        \"street\": \"Main St\",\n        \"number\": \"123A\",\n        \"city\": \"Oaxaca\",\n        \"postalCode\": 68000\n    },\n    \"profilePicture\": \"https://example.com/profile/john-doe.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Update a user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John A.\",\n    \"lastName\": \"Gil\",\n    \"phoneNumber\": \"555-1234\",\n    \"role\": \"Admin\",\n    \"address\": {\n        \"street\": \"Main St\",\n        \"number\": \"123A\",\n        \"city\": \"Veracruz\",\n        \"postalCode\": 68111\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{userId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{userId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Deletes a collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{userId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users?page=9&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "9"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "jo",
+									"disabled": true
+								}
+							]
+						},
+						"description": "### Get Users\n\nThis endpoint retrieves a list of users with pagination support.\n\n#### Request\n\n- Method: GET\n    \n- Endpoint: `{{base_url}}/users`\n    \n- Query Parameters:\n    \n    - `page` (integer, required): The page number for pagination.\n        \n    - `limit` (integer, required): The number of users to retrieve per page."
+					},
+					"response": []
+				}
+			],
+			"description": "The `/users`endpoints let you manage the users."
+		}
+	],
+	"auth": {
+		"type": "jwt",
+		"jwt": [
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "algorithm",
+				"value": "HS256",
+				"type": "string"
+			},
+			{
+				"key": "isSecretBase64Encoded",
+				"value": false,
+				"type": "boolean"
+			},
+			{
+				"key": "payload",
+				"value": "{}",
+				"type": "string"
+			},
+			{
+				"key": "headerPrefix",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "queryParamKey",
+				"value": "token",
+				"type": "string"
+			},
+			{
+				"key": "header",
+				"value": "{}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8181/api"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI5LCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzQzNzA4MjkzLCJleHAiOjE3NDM3OTQ2OTN9.751dezlRuj_lT-bPATynJmB7OQDF4yit1qv-nbxfbgE",
+			"type": "default"
+		}
+	]
+}
