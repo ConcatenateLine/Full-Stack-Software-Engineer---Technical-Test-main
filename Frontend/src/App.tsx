@@ -5,6 +5,8 @@ import HomeContainer from "./features/home/HomeContainer";
 import AuthContainer from "./features/auth/AuthContainer";
 import PrivateLayout from "./common/layouts/PrivateLayout";
 import UserContainer from "./features/user/UserContainer";
+import UserAddContainer from "./features/user/UserAddContainer";
+import UserUpdateContainer from "./features/user/UserUpdateContainer";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
       </Route>
       <Route path="/dashboard" element={<PrivateLayout />}>
         <Route index element={<UserContainer />} />
+        <Route path="user/add" element={<UserAddContainer />} />
+        <Route path="user/:id/edit" element={<UserUpdateContainer />} />
       </Route>
     </Routes>
   );

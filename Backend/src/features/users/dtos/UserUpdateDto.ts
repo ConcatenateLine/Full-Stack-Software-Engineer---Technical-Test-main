@@ -17,7 +17,7 @@ export default class UserUpdateDto {
   lastName?: string;
 
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   @IsOptional()
   password?: string;
 

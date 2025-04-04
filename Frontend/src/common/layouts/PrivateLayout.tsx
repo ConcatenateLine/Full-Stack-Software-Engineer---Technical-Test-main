@@ -1,38 +1,78 @@
-import { useLogoutMutation } from "@/features/auth/services/AuthService";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import PrivateRoute from "../components/PrivateRoute";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import DashboardSidebar from "../components/DashboardSidebar";
+import { Toaster } from "sonner";
 
 const PrivateLayout = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [logout] = useLogoutMutation();
-
-  const handleLogout = async () => {
-    try {
-      await logout("Logout").unwrap();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+  const breadcrumbItems = [
+    {
+      title: "Users",
+      url: "/dashboard",
+    },
+  ];
 
   return (
     <PrivateRoute>
-      <div className="flex min-h-screen">
-        <aside className="w-64 bg-sidebar">navegation</aside>
-        <main className="flex-1 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">{location.pathname}</h1>
-            <button
-              onClick={handleLogout}
-              className="text-red-500 hover:text-red-700"
-            >
-              Logout
-            </button>
+      <SidebarProvider>
+        <DashboardSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2">
+            <div className="flex items-center gap-2 px-4">
+              <SidebarTrigger className="-ml-1 cursor-pointer" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink
+                      className="cursor-pointer"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      Dashboard
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  {breadcrumbItems.map((item) => (
+                    <BreadcrumbItem key={item.title}>
+                      <BreadcrumbLink
+                        className="cursor-pointer"
+                        onClick={() => navigate(item.url)}
+                      >
+                        {item.title}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+              <div className="aspect-video rounded-xl bg-muted/50" />
+              <div className="aspect-video rounded-xl bg-muted/50" />
+              <div className="aspect-video rounded-xl bg-muted/50" />
+            </div> */}
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+              <Outlet />
+            </div>
           </div>
-          <Outlet />
-        </main>
-      </div>
+        </SidebarInset>
+      </SidebarProvider>
+      <Toaster />
     </PrivateRoute>
   );
 };

@@ -4,13 +4,14 @@ export type User = {
   lastName: string;
   email: string;
   phoneNumber: string;
+  password?: string;
   role: string;
   status: string;
   address?: {
     street: string;
     number: string;
     city: string;
-    postalCode: string;
+    postalCode: number;
   };
   profilePicture?: string;
 };

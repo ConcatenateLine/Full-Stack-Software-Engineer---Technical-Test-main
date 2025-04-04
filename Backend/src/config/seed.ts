@@ -43,6 +43,7 @@ async function generateRandomUser(index: number): Promise<User> {
   )}`;
   const password = "password123";
   const status = Math.random() > 0.2 ? "Active" : "Inactive";
+  const role = Math.random() > 0.2 ? "Admin" : "User";
 
   const user = new User();
   user.firstName = firstName;
@@ -50,9 +51,8 @@ async function generateRandomUser(index: number): Promise<User> {
   user.email = `${firstName.toLowerCase()}${lastName.toLowerCase()}${index}@${emailDomain}`;
   user.phoneNumber = phoneNumber;
   user.status = status;
-
+  user.role = role;
   user.password = await bcrypt.hash(password, 10);
-
   user.address = {
     street: "123 Main St",
     number: "123",
@@ -77,6 +77,23 @@ export async function seedUsers(dataSource: DataSource) {
       const user = await generateRandomUser(i);
       users.push(user);
     }
+
+    const user = new User();
+    user.firstName = "Gonzalo";
+    user.lastName = "Vinegas";
+    user.email = "GonzaloVinegas@gmail.com";
+    user.phoneNumber = "+1234567890";
+    user.status = "Active";
+    user.role = "Admin";
+    user.password = await bcrypt.hash("password123", 10);
+    user.address = {
+      street: "123 Main St",
+      number: "123",
+      city: "City",
+      postalCode: 12345,
+    };
+
+    users.push(user);
 
     // Save all users in one transaction
     await dataSource.manager.save(users);

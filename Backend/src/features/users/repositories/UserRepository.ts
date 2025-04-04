@@ -48,9 +48,9 @@ export default class UserRepository {
   }: UserFilterType): Promise<FilterReturnType<User>> {
     const queryBuilder = User.createQueryBuilder("user");
 
-    // if (role) {
-    //   queryBuilder.andWhere("user.role = :role", { role });
-    // }
+    if (role) {
+      queryBuilder.andWhere("user.role = :role", { role });
+    }
     if (status) {
       queryBuilder.andWhere("user.status = :status", { status });
     }

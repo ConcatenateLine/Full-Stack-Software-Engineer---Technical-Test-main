@@ -1,6 +1,6 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
 import { setAuth, clearAuth } from "../slices/AuthSlice";
-import { authApi } from "../services/AuthService";
+import { AuthApi } from "../services/AuthService";
 import { appStarted } from "@/features/store/actions/AppStarted";
 
 const authCheckMiddleware = createListenerMiddleware();
@@ -29,7 +29,7 @@ authCheckMiddleware.startListening({
         }
 
         const request = listenerApi.dispatch(
-          authApi.endpoints.validateToken.initiate(null)
+          AuthApi.endpoints.validateToken.initiate(null)
         );
 
         // Validate the token with the backend

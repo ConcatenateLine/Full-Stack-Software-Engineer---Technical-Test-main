@@ -45,11 +45,8 @@ export default class User extends BaseEntity {
   @Column({ type: "json", nullable: true })
   address!: Address;
 
-  // @Column({ nullable: true })
-  // role: string;
-
-  // @Column({ nullable: true })
-  // address: string;
+  @Column("varchar", { default: "User" })
+  role!: string;
 
   // @Column({ nullable: true })
   // profilePicture: string;

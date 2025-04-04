@@ -55,18 +55,16 @@ export default class UserService {
       if (updateData.phoneNumber !== undefined) {
         user.phoneNumber = updateData.phoneNumber;
       }
-      if (updateData.address?.street !== undefined) {
-        user.address.street = updateData.address.street;
+
+      if (updateData.address !== undefined) {
+        user.address = new Address(
+          updateData.address.street || "",
+          updateData.address.number || "",
+          updateData.address.city || "",
+          updateData.address.postalCode || 0
+        );
       }
-      if (updateData.address?.number !== undefined) {
-        user.address.number = updateData.address.number;
-      }
-      if (updateData.address?.city !== undefined) {
-        user.address.city = updateData.address.city;
-      }
-      if (updateData.address?.postalCode !== undefined) {
-        user.address.postalCode = updateData.address.postalCode;
-      }
+
       // if (updateData.role !== undefined) {
       //   user.role = updateData.role;
       // }
