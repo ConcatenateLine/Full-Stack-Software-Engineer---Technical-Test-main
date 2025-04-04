@@ -16,5 +16,10 @@ router.post(
   AuthMiddleware.authenticate,
   controller.logout.bind(controller)
 );
+router.get(
+  "/validate-token",
+  AuthMiddleware.authenticate,
+  controller.validateToken.bind(controller)
+);
 
 export default router;

@@ -22,6 +22,11 @@ export default class AuthController {
       });
 
       const result = await this.authService.login(loginDto);
+
+      res.cookie("Authorization", result.token, {
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      });
+
       res.status(200).json(result);
     } catch (error) {
       if (error instanceof Array) {
@@ -49,6 +54,25 @@ export default class AuthController {
       res.status(200).json({
         message: "Successfully logged out",
       });
+    } catch (error) {
+      if (error instanceof CustomError) {
+        res.status(error.status || 400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  }
+
+  async validateToken(req: CustomRequestType, res: Response) {
+    try {
+      if (req.user) {
+        res.status(200).json({
+          message: "Token is valid",
+          user: req.user,
+        });
+      } else {
+        throw new CustomError("Unauthorized", "401", {}, 401);
+      }
     } catch (error) {
       if (error instanceof CustomError) {
         res.status(error.status || 400).json({ error: error.message });

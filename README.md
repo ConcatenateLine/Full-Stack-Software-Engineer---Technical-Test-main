@@ -27,7 +27,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
        - **Query Parameters**:
          - [x] `page` (number): Page number for pagination.
          - [x] `limit` (number): Number of users per page.
-         - [x] `role` (optional): Filter by role (e.g., Admin, User).
+         - [] `role` (optional): Filter by role (e.g., Admin, User).
          - [x] `status` (optional): Filter by status (Active/Inactive).
          - [x] `search` (optional): Search by partial matches in `name` or `email`.
      - [x] `POST /users`: Creates a new user.
@@ -54,8 +54,8 @@ You are tasked with creating a **full-stack application** for managing users. Th
 ### Frontend Requirements (React)
 
 1. **Login Page**
-   - A form where users can log in using their email and password.
-   - On successful login, store the JWT in local storage or cookies and redirect the user to the dashboard.
+   - [x] A form where users can log in using their email and password.
+   - [x] On successful login, store the JWT in local storage or cookies and redirect the user to the dashboard.
    - Show an error message for invalid credentials.
 
 2. **Dashboard**
@@ -111,7 +111,10 @@ You are tasked with creating a **full-stack application** for managing users. Th
 - Implement a **Role-Based Access Control**:
   - Allow only Admin users to access the dashboard and perform user management.
 - Use **TypeScript** for both the frontend and backend.
-- Style the frontend using **Material-UI**, **TailwindCSS**, or another modern UI library.
+- [x] Style the frontend using **Material-UI**, **TailwindCSS**, or another modern UI library.
+  
+  ```Use Shadcn for Frontend```
+
 - Include **Unit Tests** and **Integration Tests** for key features.
 - Add **pagination controls** to show the total number of users and the current page.
 - Use **Docker** to containerize the app (both frontend and backend).

@@ -20,11 +20,22 @@ export default class AuthMiddleware {
     try {
       const authHeader = req.headers.authorization;
 
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw new CustomError("No token provided", "401");
+      let token =
+        authHeader && authHeader.startsWith("Bearer ")
+          ? authHeader.split(" ")[1]
+          : null;
+
+      if (!token) {
+        const cookies = req.cookies;
+
+        if (cookies && cookies.Authorization) {
+          token = cookies.Authorization;
+        }
       }
 
-      const token = authHeader.split(" ")[1];
+      if (!token) {
+        throw new CustomError("No token provided", "401");
+      }
 
       await AuthMiddleware.authService.validateToken(token);
 
