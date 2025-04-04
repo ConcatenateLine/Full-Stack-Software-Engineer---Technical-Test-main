@@ -51,6 +51,11 @@ const UserContainer = () => {
     
     setIsLoading(true);
     try {
+      setTablePagination((prev) => ({
+        ...prev,
+        pageIndex: 1,
+      }));
+
       setCustomFilters((prev) => filters);
       await refetch();
     } catch (err) {

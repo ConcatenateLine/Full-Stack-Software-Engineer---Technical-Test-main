@@ -1,54 +1,100 @@
-# React + TypeScript + Vite
+# User Management Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React TypeScript application for managing users with features like search, filtering, pagination, and CRUD operations.
 
-Currently, two official plugins are available:
+Feature-Based Architecture for a User Management Application.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+## Project Reference Structure of implementation
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+src/
+├── App.tsx              # Main application component
+├── App.css              # Global styles for the application
+├── index.css            # Tailwind CSS configuration
+├── main.tsx             # Entry point of the application
+├── vite-env.d.ts        # Vite environment type declarations
+├── assets/              # Static assets (images, fonts, etc.)
+├── common/              # Shared components and utilities
+│   ├── components/      # Reusable UI components
+│   │   ├── DataTable.tsx # Table component with filtering and pagination
+│   │   └── ...          # Other shared components
+│   └── types/           # Shared TypeScript types and interfaces
+├── components/          # Global UI components
+├── features/            # Feature-based architecture
+│   └── user/            # User management feature
+│       ├── UserContainer.tsx      # Main user list container
+│       ├── UserAddContainer.tsx   # Add new user form container
+│       ├── UserUpdateContainer.tsx # Edit user form container
+│       ├── components/            # User-specific UI components
+│       │   └── UserColumns.tsx     # Table column definitions
+│       ├── services/              # API services
+│       │   └── UserService.ts      # User-related API calls
+│       ├── slices/                # Redux state management
+│       │   └── userSlice.ts        # User state management
+│       └── types/                 # User-specific TypeScript types
+├── hooks/               # Custom React hooks
+│   └── useAuth.ts       # Authentication hook
+├── lib/                 # Utility libraries
+└── types/               # Global TypeScript types
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- React
+- TypeScript
+- Vite
+- Redux Toolkit
+- React Query
+- Shadcn UI
+- Tailwind CSS
+- TanStack Table
+- Lucide React Icons
+- React Router
+- Sonner (Toast Notifications)
+- zod
+- react-hook-form
+- react-router
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Features
+
+- User Authentication with JWT
+- Responsive Dashboard UI
+- Advanced User Table with:
+  - Search functionality
+  - Role-based filtering (Admin/User)
+  - Status filtering (Active/Inactive)
+  - Pagination
+  - Column customization
+- User CRUD operations
+  - Add new users
+  - Edit existing users
+  - Delete users
+- State management with Redux Toolkit
+- Loading states and error handling'
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm (v9 or higher)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+
+3. Run the development server:
+   ```bash
+   npm run dev
+
+4. Open http://localhost:5173 in your browser
+
+## License
+
+MIT License

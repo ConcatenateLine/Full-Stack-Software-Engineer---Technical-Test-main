@@ -79,6 +79,7 @@ export async function seedUsers(dataSource: DataSource) {
     }
 
     const user = new User();
+    
     user.firstName = "Gonzalo";
     user.lastName = "Vinegas";
     user.email = "GonzaloVinegas@gmail.com";
