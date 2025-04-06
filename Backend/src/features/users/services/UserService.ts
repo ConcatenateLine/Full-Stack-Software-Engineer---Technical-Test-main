@@ -65,9 +65,9 @@ export default class UserService {
         );
       }
 
-      // if (updateData.role !== undefined) {
-      //   user.role = updateData.role;
-      // }
+      if (updateData.role !== undefined) {
+        user.role = updateData.role;
+      }
 
       return user.save();
     } catch (error) {

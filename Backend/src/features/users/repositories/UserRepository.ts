@@ -2,6 +2,7 @@ import User from "../entities/User";
 import CustomError from "../../common/errors/CustomError";
 import type { UserFilterType } from "../entities/UserFilterType";
 import type { FilterReturnType } from "../../common/types/FilterReturnType";
+import { Brackets } from "typeorm";
 
 export default class UserRepository {
   async create(userData: Partial<User>): Promise<User> {
@@ -20,6 +21,7 @@ export default class UserRepository {
     user.phoneNumber = userData.phoneNumber ?? "";
     user.address = userData.address!;
     user.status = userData.status ?? "Active";
+    user.role = userData.role ?? "User";
 
     await user.setPassword(userData.password!);
 
@@ -46,29 +48,38 @@ export default class UserRepository {
     page,
     limit,
   }: UserFilterType): Promise<FilterReturnType<User>> {
+    const searchPattern = `%${search}%`;
+    const conditions: any[] = [];
+    const params: Record<string, any> = {};
+
     const queryBuilder = User.createQueryBuilder("user");
 
-    if (role) {
-      queryBuilder.andWhere("user.role = :role", { role });
-    }
-    if (status) {
-      queryBuilder.andWhere("user.status = :status", { status });
-    }
     if (search) {
-      queryBuilder.andWhere(
-        "user.firstName ILIKE :name OR user.lastName ILIKE :name OR user.email ILIKE :name",
-        {
-          name: `%${search}%`,
-        }
+      queryBuilder.where(
+        new Brackets((qb) => {
+          qb.where("user.firstName ILIKE :searchPattern", { searchPattern })
+            .orWhere("user.lastName ILIKE :searchPattern")
+            .orWhere("user.email ILIKE :searchPattern");
+        })
       );
     }
+    if (role) {
+      conditions.push("user.role = :role");
+      params.role = role;
+    }
+    if (status) {
+      conditions.push("user.status = :status");
+      params.status = status;
+    }
+    if (conditions.length > 0) {
+      queryBuilder.andWhere(conditions.join(" AND "), params);
+    }
+
+    queryBuilder.skip((page - 1) * limit).take(limit);
 
     const total = await queryBuilder.getCount();
 
-    const [items, count] = await queryBuilder
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
+    const [items, count] = await queryBuilder.getManyAndCount();
 
     return { items, count, total };
   }
