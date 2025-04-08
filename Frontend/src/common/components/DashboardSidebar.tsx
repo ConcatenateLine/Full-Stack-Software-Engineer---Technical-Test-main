@@ -14,10 +14,11 @@ import NavProjects from "./NavProjects";
 import NavSecondary from "./NavSecondary";
 import NavUser from "./NavUser";
 import { data } from "../constants/SidebarItems";
+import { ComponentProps } from "react";
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
   return (
-    <Sidebar variant="inset">
+    <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

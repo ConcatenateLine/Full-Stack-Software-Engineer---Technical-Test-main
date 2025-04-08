@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,40 +25,39 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useAddUserMutation } from "./services/UserService";
 
+const stringSchema = (min: number, max: number, fieldName: string) =>
+  z
+    .string()
+    .min(min, `${fieldName} must be at least ${min} characters long`)
+    .max(max, `${fieldName} must be at most ${max} characters long`);
+
+const addressSchema = z.object({
+  street: stringSchema(2, 50, "Street"),
+  city: stringSchema(2, 50, "City"),
+  number: stringSchema(1, 50, "Number"),
+  postalCode: z.string().regex(/^\d{5}$/, "Zip code must be exactly 5 digits"),
+});
+
 const formSchema = z.object({
-  firstName: z
-    .string()
-    .min(2, "First name must be at least 2 characters long")
-    .max(50, "First name must be at most 50 characters long"),
-  lastName: z
-    .string()
-    .min(2, "Last name must be at least 2 characters long")
-    .max(50, "Last name must be at most 50 characters long"),
+  firstName: stringSchema(2, 50, "First name"),
+  lastName: stringSchema(2, 50, "Last name"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+  password: z
+    .string()
+    .regex(
+      /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&#~^]{8,}$/,
+      "Password must be at least 8 characters long, including one uppercase letter, one digit, and no special characters except @$!%*?&."
+    ),
   role: z.enum(["Admin", "User"]),
   phoneNumber: z
     .string()
-    .min(10, "Phone number must be at least 10 digits long"),
+    .regex(
+      /^(\+?\d{1,4})-(\d{10})$/,
+      "Phone number must include a '-' between the area code and the number"
+    )
+    .optional(),
   status: z.enum(["Active", "Inactive"]),
-  address: z.object({
-    street: z
-      .string()
-      .min(2, "Street must be at least 2 characters long")
-      .max(50, "Street must be at most 50 characters long"),
-    city: z
-      .string()
-      .min(2, "City must be at least 2 characters long")
-      .max(50, "City must be at most 50 characters long"),
-    number: z
-      .string()
-      .min(1, "Number must be at least 1 character long")
-      .max(50, "Number must be at most 50 characters long"),
-    postalCode: z
-      .string()
-      .min(5, "Zip code must be at least 5 digits long")
-      .max(5, "Zip code must be at most 5 digits long"),
-  }),
+  address: addressSchema,
 });
 
 const UserAddContainer = () => {
@@ -94,7 +94,7 @@ const UserAddContainer = () => {
         ...data,
         address: {
           ...data.address,
-          postalCode: Number(data.address.postalCode),
+          postalCode: String(data.address.postalCode),
         },
       }).unwrap();
 
@@ -210,28 +210,56 @@ const UserAddContainer = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-3">
-              <Label htmlFor="role">Role</Label>
-              <Select {...form.register("role")}>
-                <SelectTrigger id="role" className="w-full">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="User">User</SelectItem>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="status">Status</Label>
-              <Select {...form.register("status")}>
-                <SelectTrigger id="status" className="w-full">
-                  <SelectValue placeholder="Select a status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -246,6 +274,7 @@ const UserAddContainer = () => {
                       <Input {...field} />
                     </FormControl>
                     <FormMessage />
+                    <FormDescription>(e.g., +52-0123456789)</FormDescription>
                   </FormItem>
                 )}
               />
@@ -317,6 +346,7 @@ const UserAddContainer = () => {
           </div>
           <div className="flex gap-2">
             <Button
+              type="button"
               variant="outline"
               className="w-1/3 cursor-pointer"
               onClick={onCancel}

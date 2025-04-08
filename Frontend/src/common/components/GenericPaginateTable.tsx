@@ -1,36 +1,4 @@
-import {
-  ColumnFiltersState,
-  Row,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { z } from "zod";
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-  ColumnsIcon,
-  PlusIcon,
-  RollerCoasterIcon,
-} from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -39,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -49,83 +17,91 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
-import { Filters, Pagination } from "../types/TableTypes";
+import { useTableState } from "@/features/store/hooks/useTableState";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  Row,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Filters } from "../types/TableTypes";
+import { z } from "zod";
+import Debounce from "@/lib/Debounce";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+  ColumnsIcon,
+  PlusIcon,
+  RollerCoasterIcon,
+  TagsIcon,
+} from "lucide-react";
+import { UsersResponse } from "@/features/user/services/UserService";
+import { useState } from "react";
 
-const DataTable = ({
-  data,
-  columns,
-  schema,
-  operations,
-  paginationCustom,
-  filters,
-  isLoading,
-}: {
-  data: any;
-  columns: any;
+interface GenericPaginateTableProps<T> {
+  id: string;
   schema: z.ZodType<any>;
-  paginationCustom: Pagination;
-  filters: Filters;
-  isLoading: boolean;
+  query: Function;
+  columns: ColumnDef<T>[];
   operations: {
-    add: () => void;
-    handlePaginate: (limit: number, page: number) => void;
-    setCustomFilters: (filters: Filters) => void;
+    add: Function;
   };
-}) => {
-  const [rowSelection, setRowSelection] = useState({});
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+}
 
-  const handleFiltersChange = (filter: string, value: string) => {
-    const currentValues = Object.keys(filters);
-    const newFilter: Filters = {};
+export const GenericPaginateTable = <T,>({
+  id,
+  schema,
+  query,
+  columns,
+  operations,
+}: GenericPaginateTableProps<T>) => {
+  const { currentPage, pageSize, filters, setPage, setPageSize, setFilters } =
+    useTableState(id);
+  const [search, setSearch] = useState(filters["search"] || "");
 
-    let newValues: string[] = [];
-    if (
-      (currentValues.includes(filter) &&
-        filters[filter as keyof Filters] === value) ||
-      value === "All"
-    ) {
-      currentValues.forEach((key) => {
-        if (key !== filter) {
-          newValues.push(key);
-        }
-      });
-    } else {
-      newFilter[filter as keyof Filters] = value;
-    }
-  
-    newValues.forEach((key) => {
-      newFilter[key as keyof Filters] = filters[key as keyof Filters];
-    });
-    operations?.setCustomFilters(newFilter);
-  };
+  const { data, isLoading, isFetching, fetchNextPage, fetchPreviousPage } =
+    query(
+      {
+        filters,
+        pageSize,
+        pageParam: currentPage,
+      },
+      { pageParam: currentPage }
+    );
 
-  const handleFiltersTabs = (filter: string, value: string) => {
-    const currentValues = Object.keys(filters);
-    const newFilter: Filters = {};
+  const currentPageData = data?.pages.find(
+    (page: UsersResponse) => page.pagination.page === currentPage
+  );
 
-    let newValues: string[] = [];
-    if (
-      currentValues.includes(filter) &&
-      filters[filter as keyof Filters] === value
-    ) {
-      return;
-    } else if (value === "All") {
-      newValues = currentValues.filter((v) => v !== filter);
-    } else {
-      newFilter[filter as keyof Filters] = value;
-    }
+  const rows = currentPageData?.data ?? [];
+  const totalPages = currentPageData?.pagination.totalPages ?? 1;
+  const waiting = isLoading || isFetching;
+  const cleared = Object.keys(filters).length === 0;
 
-    for (const key of newValues) {
-      newFilter[key as keyof Filters] = filters[key as keyof Filters];
-    }
-    operations?.setCustomFilters(newFilter);
-  };
+  const table = useReactTable({
+    data: rows,
+    columns,
+    pageCount: totalPages,
+    manualPagination: true,
+    state: {
+      pagination: {
+        pageIndex: currentPage - 1,
+        pageSize,
+      },
+    },
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   const DraggableRow = ({ row }: { row: Row<z.infer<typeof schema>> }) => {
     return (
@@ -142,48 +118,53 @@ const DataTable = ({
     );
   };
 
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      pagination: {
-        pageSize: paginationCustom.limit,
-        pageIndex: 0,
-      },
-    },
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-  });
+  const handleFiltersChange = (filter: string, value: string) => {
+    const newFilter: Filters<string> = {
+      ...filters,
+    };
+
+    if (
+      value &&
+      value !== "All" &&
+      newFilter[filter as keyof Filters<string>] != value
+    ) {
+      newFilter[filter] = value;
+    } else {
+      delete newFilter[filter];
+    }
+
+    setFilters(newFilter);
+  };
+
+  const handleSearch = Debounce((value: string) => {
+    handleFiltersChange("search", value);
+  }, 1000);
+
+  const handleClear = () => {
+    setFilters({});
+    setSearch("");
+  };
 
   return (
     <Tabs
       defaultValue="outline"
-      className="flex w-full flex-col justify-start gap-6"
+      className="flex w-full flex-col justify-start gap-6 py-6"
     >
-      <div className="flex items-center justify-between px-4 lg:px-6">
+      <div className="flex items-center justify-between px-4 lg:px-6 gap-2">
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
         <Select
           onValueChange={(value) => handleFiltersChange("status", value)}
-          defaultValue={filters.status}
+          value={filters.status || "All"}
         >
           <SelectTrigger className="md:hidden flex w-fit" id="view-selector">
             <SelectValue placeholder="Select a view" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem className="cursor-pointer" value="All">
+              All
+            </SelectItem>
             <SelectItem className="cursor-pointer" value="Active">
               Active
             </SelectItem>
@@ -192,42 +173,31 @@ const DataTable = ({
             </SelectItem>
           </SelectContent>
         </Select>
-        <Tabs className="hidden md:flex" defaultValue={filters.status}>
+        <Tabs
+          className="hidden md:flex"
+          value={filters.status || "All"}
+          onValueChange={(value) => handleFiltersChange("status", value)}
+        >
           <TabsList>
-            <TabsTrigger
-              value="All"
-              className="cursor-pointer"
-              onClick={() => handleFiltersTabs("status", "All")}
-            >
+            <TabsTrigger value="All" className="cursor-pointer">
               All
             </TabsTrigger>
-            <TabsTrigger
-              value="Active"
-              className="cursor-pointer"
-              onClick={() => handleFiltersTabs("status", "Active")}
-            >
+            <TabsTrigger value="Active" className="cursor-pointer">
               Active
             </TabsTrigger>
-            <TabsTrigger
-              value="Inactive"
-              className="gap-1 cursor-pointer"
-              onClick={() => handleFiltersTabs("status", "Inactive")}
-            >
+            <TabsTrigger value="Inactive" className="gap-1 cursor-pointer">
               Inactive
-              {/* <Badge
-              variant="secondary"
-              className="flex h-5 w-5 items-center justify-center rounded-full bg-muted-foreground/30"
-            >
-              3
-            </Badge> */}
             </TabsTrigger>
           </TabsList>
         </Tabs>
         <Input
           placeholder="Search"
           className="hidden md:flex w-lg"
-          value={filters.search}
-          onChange={(e) => handleFiltersChange("search", e.target.value)}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            handleSearch(e.target.value);
+          }}
           id="search"
         />
         <div className="flex items-center gap-2">
@@ -258,6 +228,16 @@ const DataTable = ({
               </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button
+            variant="outline"
+            size="sm"
+            className="cursor-pointer"
+            onClick={handleClear}
+            disabled={cleared}
+          >
+            <TagsIcon />
+            <span className="hidden lg:inline">Clear</span>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -291,15 +271,17 @@ const DataTable = ({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
-            className="cursor-pointer"
-            variant="outline"
-            size="sm"
-            onClick={() => operations && operations.add()}
-          >
-            <PlusIcon />
-            <span className="hidden lg:inline">Add User</span>
-          </Button>
+          {operations?.add && (
+            <Button
+              className="cursor-pointer"
+              variant="outline"
+              size="sm"
+              onClick={() => operations.add()}
+            >
+              <PlusIcon />
+              <span className="hidden lg:inline">Add User</span>
+            </Button>
+          )}
         </div>
       </div>
       <TabsContent
@@ -307,7 +289,7 @@ const DataTable = ({
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="overflow-hidden rounded-lg border">
-          {isLoading ? (
+          {waiting ? (
             <Skeleton className="h-96" />
           ) : (
             <Table>
@@ -356,14 +338,14 @@ const DataTable = ({
                 Rows per page
               </Label>
               <Select
-                value={`${paginationCustom.limit}`}
+                value={`${pageSize}`}
                 onValueChange={(value) => {
-                  table.setPageSize(Number(value));
-                  operations?.handlePaginate(Number(value), 1);
+                  setPage(1);
+                  setPageSize(Number(value));
                 }}
               >
                 <SelectTrigger className="w-20" id="rows-per-page">
-                  <SelectValue placeholder={paginationCustom.limit} />
+                  <SelectValue placeholder={pageSize} />
                 </SelectTrigger>
                 <SelectContent side="top">
                   {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -375,19 +357,16 @@ const DataTable = ({
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {paginationCustom.page} of {paginationCustom.totalPages}
+              Page {currentPage} of {totalPages}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex cursor-pointer"
                 onClick={() => {
-                  operations?.handlePaginate(
-                    table.getState().pagination.pageSize,
-                    1
-                  );
+                  setPage(1);
                 }}
-                disabled={paginationCustom.page < 2}
+                disabled={currentPage < 2}
               >
                 <span className="sr-only">Go to first page</span>
                 <ChevronsLeftIcon />
@@ -397,12 +376,10 @@ const DataTable = ({
                 className="size-8 cursor-pointer"
                 size="icon"
                 onClick={() => {
-                  operations?.handlePaginate(
-                    table.getState().pagination.pageSize,
-                    paginationCustom.page - 1
-                  );
+                  setPage(currentPage - 1);
+                  fetchPreviousPage();
                 }}
-                disabled={paginationCustom.page < 2}
+                disabled={currentPage < 2}
               >
                 <span className="sr-only">Go to previous page</span>
                 <ChevronLeftIcon />
@@ -412,12 +389,10 @@ const DataTable = ({
                 className="size-8 cursor-pointer"
                 size="icon"
                 onClick={() => {
-                  operations?.handlePaginate(
-                    table.getState().pagination.pageSize,
-                    paginationCustom.page + 1
-                  );
+                  setPage(currentPage + 1);
+                  fetchNextPage();
                 }}
-                disabled={paginationCustom.page >= paginationCustom.totalPages}
+                disabled={currentPage >= totalPages}
               >
                 <span className="sr-only">Go to next page</span>
                 <ChevronRightIcon />
@@ -427,12 +402,9 @@ const DataTable = ({
                 className="hidden size-8 lg:flex cursor-pointer"
                 size="icon"
                 onClick={() => {
-                  operations?.handlePaginate(
-                    table.getState().pagination.pageSize,
-                    paginationCustom.totalPages
-                  );
+                  setPage(totalPages);
                 }}
-                disabled={paginationCustom.page >= paginationCustom.totalPages}
+                disabled={currentPage >= totalPages}
               >
                 <span className="sr-only">Go to last page</span>
                 <ChevronsRightIcon />
@@ -459,5 +431,3 @@ const DataTable = ({
     </Tabs>
   );
 };
-
-export default DataTable;

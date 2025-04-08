@@ -1,10 +1,11 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  Matches,
   MinLength,
   ValidateNested,
 } from "class-validator";
@@ -24,7 +25,10 @@ export default class UserCreateDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(8)
+  @Matches(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&#~^]{8,}$/, {
+    message:
+      "Password must be at least 8 characters long, including one uppercase letter, one digit, and no special characters except @$!%*?&#~^.",
+  })
   password!: string;
 
   @IsString()
@@ -34,6 +38,10 @@ export default class UserCreateDto {
   @IsString()
   @IsNotEmpty()
   role!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  status!: string;
 
   @ValidateNested()
   @Type(() => AddressCreateDto)
@@ -59,5 +67,6 @@ export class AddressCreateDto {
 
   @IsNumber()
   @IsNotEmpty()
-  postalCode!: number;
+  @Transform(({ value }) => Number(value) || 0)
+  postalCode?: number;
 }

@@ -4,6 +4,7 @@ import type UserRepository from "../../users/repositories/UserRepository";
 import JwtService from "./JwtService";
 import type LoginDto from "../dtos/LoginDto";
 import type TokenBlacklistRepository from "../repositories/TokenBlackListRepository";
+import type User from "../../users/entities/User";
 
 export default class AuthService {
   constructor(
@@ -32,7 +33,7 @@ export default class AuthService {
 
       const payload = {
         userId: user.id,
-        // role: user.role,
+        role: user.role,
         email: user.email,
       };
 
@@ -44,8 +45,8 @@ export default class AuthService {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          //   role: user.role,
-          status: user.status,
+          role: user.role,
+          // status: user.status,
           //   profilePicture: user.profilePicture,
         },
         token,
@@ -55,7 +56,7 @@ export default class AuthService {
         throw new CustomError("Database error");
       }
       if (error instanceof EntityNotFoundError) {
-        throw new CustomError("User not found");
+        throw new CustomError("This user does not exist");
       }
 
       throw error;
@@ -77,7 +78,7 @@ export default class AuthService {
     }
   }
 
-  async validateToken(token: string): Promise<boolean> {
+  async validateToken(token: string): Promise<Partial<User>> {
     try {
       const isBlacklisted = await this.tokenBlacklistRepository.exists(token);
       if (isBlacklisted) {
@@ -85,7 +86,22 @@ export default class AuthService {
       }
 
       const decoded = JwtService.verify(token);
-      return true;
+
+      const user = await this.userRepository.findById(decoded.userId);
+
+      if (!user || user.status !== "Active") {
+        throw new CustomError("User not found");
+      }
+
+      return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        // status: user.status,
+        // profilePicture: user.profilePicture,
+      };
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

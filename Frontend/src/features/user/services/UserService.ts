@@ -1,13 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { updateData, resetState, deleteUser } from "../slices/UserSlices";
 import { User } from "../types/UserType";
-import { DeepPartial } from "react-hook-form";
-import { Filters } from "@/common/types/TableTypes";
+import { Pagination } from "@/common/types/TableTypes";
+
+export type UsersResponse = {
+  data: User[];
+  pagination: Pagination;
+};
+
+export type UsersQuery = {
+  filters: Record<string, string>;
+  pageSize: number;
+  pageParam: number;
+};
 
 export const UserApi = createApi({
   reducerPath: "userApi",
+  tagTypes: ["Users"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8181/api",
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token;
       if (token) {
@@ -18,95 +28,92 @@ export const UserApi = createApi({
     credentials: "include",
   }),
   endpoints: (builder) => ({
-    getAllUsers: builder.query({
-      query: ({
-        page,
-        limit,
-        filters,
-      }: {
-        page: number;
-        limit: number;
-        filters: Filters;
-      }) => ({
-        url: "/users",
-        method: "GET",
-        params:{
-          page,
-          limit,
-          ...filters
-        }
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-
-          if (data) {
-            dispatch(updateData(data));
-          }
-        } catch (err) {
-          dispatch(resetState());
-        }
-      },
-    }),
     deleteUser: builder.mutation({
+      invalidatesTags: ["Users"],
       query: (id: number) => ({
         url: `/users/${id}`,
         method: "DELETE",
       }),
-      async onQueryStarted(id: number, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          dispatch(deleteUser(id));
-        } catch (err) {
-          throw new Error("Failed to delete user");
-        }
-      },
     }),
     addUser: builder.mutation({
+      invalidatesTags: ["Users"],
       query: (user: User) => ({
         url: "/users",
         method: "POST",
         body: { ...user, profilePicture: "develop" },
       }),
-      async onQueryStarted(user: User, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-
-          if (data.errors) {
-            throw new Error(data.errors);
-          }
-        } catch (err) {
-          throw new Error("Failed to add user");
-        }
-      },
     }),
     updateUser: builder.mutation({
-      query: (user: User) => ({
+      invalidatesTags: ["Users"],
+      query: (user: Partial<User>) => ({
         url: `/users/${user.id}`,
         method: "PUT",
         body: { ...user, profilePicture: "develop" },
       }),
-      async onQueryStarted(
-        user: DeepPartial<User>,
-        { dispatch, queryFulfilled }
-      ) {
-        try {
-          const { data } = await queryFulfilled;
-
-          if (data.errors) {
-            throw new Error(data.errors);
+    }),
+    getUsersPaginated: builder.infiniteQuery<
+      UsersResponse,
+      {
+        filters: Record<string, string>;
+        pageSize: number;
+        pageParam: number;
+      },
+      UsersQuery
+    >({
+      providesTags: ["Users"],
+      infiniteQueryOptions: {
+        initialPageParam: {
+          filters: {},
+          pageSize: 10,
+          pageParam: 1,
+        },
+        getNextPageParam: (lastPage, _, lastPageParam) => {
+          if (lastPage.pagination.hasMore) {
+            return {
+              filters: lastPageParam.filters,
+              pageSize: lastPageParam.pageSize,
+              pageParam: lastPageParam.pageParam + 1,
+            };
           }
-        } catch (err) {
-          throw new Error("Failed to update user");
+          return undefined;
+        },
+        getPreviousPageParam: (_, __, firstPageParam) => {
+          if (firstPageParam.pageParam > 2) {
+            return {
+              filters: firstPageParam.filters,
+              pageSize: firstPageParam.pageSize,
+              pageParam: firstPageParam.pageParam - 1,
+            };
+          }
+          return undefined;
+        },
+      },
+      query: ({ queryArg, pageParam }) => {
+        const { filters, pageSize } = queryArg;
+        const params = {
+          page: pageParam.pageParam.toString(),
+          limit: pageSize.toString(),
+          ...filters,
+        };
+
+        if (pageParam.pageSize != pageSize) {
+          params["page"] = "1";
         }
+        if (queryArg.pageParam != pageParam.pageParam) {
+          params["page"] = queryArg.pageParam.toString();
+        }
+        return {
+          url: `/users`,
+          params,
+        };
       },
     }),
   }),
 });
 
 export const {
-  useGetAllUsersQuery,
   useDeleteUserMutation,
   useAddUserMutation,
   useUpdateUserMutation,
+  useGetUsersPaginatedInfiniteQuery,
 } = UserApi;

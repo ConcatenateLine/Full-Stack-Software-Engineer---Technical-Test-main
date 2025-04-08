@@ -37,15 +37,18 @@ export default class AuthMiddleware {
         throw new CustomError("No token provided", "401");
       }
 
-      await AuthMiddleware.authService.validateToken(token);
+      const user = await AuthMiddleware.authService.validateToken(token);
 
+      if (!user) {
+        throw new CustomError("Invalid token", "401", {}, 401);
+      }
       const decoded = JwtService.verify(token);
 
       if (!decoded || typeof decoded !== "object" || !decoded.userId) {
         throw new CustomError("Invalid token", "401", {}, 401);
       }
 
-      req.user = decoded;
+      req.user = user;
       next();
     } catch (error) {
       if (error instanceof CustomError) {

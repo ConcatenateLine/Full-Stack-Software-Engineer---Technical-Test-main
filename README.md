@@ -59,7 +59,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
 
    - [x] A form where users can log in using their email and password.
    - [x] On successful login, store the JWT in local storage or cookies and redirect the user to the dashboard.
-   - Show an error message for invalid credentials.
+   - [x] Show an error message for invalid credentials.
 
 2. **Dashboard**
 
@@ -101,7 +101,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
      - **Profile Picture**:
        - Allow the user to upload an image file (e.g., `.jpg`, `.png`).
        - Use a library like **Multer** on the backend to upload the image and save its URL in the database.
-   - [x] 1/2 Validate the form and show appropriate error messages.
+   - [x] Validate the form and show appropriate error messages.
 
    `Fail some validations on update`
 
@@ -120,7 +120,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
 
 - Implement a **Role-Based Access Control**:
   - Allow only Admin users to access the dashboard and perform user management.
-- Use **TypeScript** for both the frontend and backend.
+- [x] Use **TypeScript** for both the frontend and backend.
 - [x] Style the frontend using **Material-UI**, **TailwindCSS**, or another modern UI library.
 
   `Use Shadcn for Frontend`

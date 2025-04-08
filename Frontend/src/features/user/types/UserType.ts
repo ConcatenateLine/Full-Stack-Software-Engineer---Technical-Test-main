@@ -3,7 +3,7 @@ export type User = {
   firstName: string;
   lastName: string;
   email: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   password?: string;
   role: string;
   status: string;
@@ -11,7 +11,7 @@ export type User = {
     street: string;
     number: string;
     city: string;
-    postalCode: number;
+    postalCode: string;
   };
   profilePicture?: string;
 };

@@ -8,7 +8,7 @@ import { Toaster } from "sonner";
 const PublicLayout = () => {
   return (
     <PublicRoute>
-      <main>
+      <main className="p-8">
         <ModeToggle />
         <NavegationMenu MenuItems={MenuItems} MenuListItem={MenuListItem} />
         <Outlet />

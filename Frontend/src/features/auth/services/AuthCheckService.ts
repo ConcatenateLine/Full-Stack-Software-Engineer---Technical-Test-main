@@ -48,7 +48,7 @@ authCheckMiddleware.startListening({
         }
       }
     } catch (error) {
-      console.error("Token validation failed:", error);
+      console.error("Authentication check failed");
       listenerApi.dispatch(clearAuth());
     }
   },

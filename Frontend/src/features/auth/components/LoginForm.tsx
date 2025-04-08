@@ -66,7 +66,11 @@ const LoginForm = () => {
               </div>
               {error && (
                 <p className="text-red-500 text-sm">
-                  {error instanceof Error ? error.message : "Login failed"}
+                  {error instanceof Error
+                    ? error.message
+                    : (error as { data: { error: string } }).data?.error
+                    ? (error as { data: { error: string } }).data?.error
+                    : "Login failed: the server was unreachable"}
                 </p>
               )}
               <Button type="submit" className="w-full" disabled={isLoading}>

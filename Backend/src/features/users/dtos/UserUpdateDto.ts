@@ -4,8 +4,9 @@ import {
   ValidateNested,
   IsNumber,
   MinLength,
+  Matches,
 } from "class-validator";
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 
 export default class UserUpdateDto {
   @IsString()
@@ -17,8 +18,11 @@ export default class UserUpdateDto {
   lastName?: string;
 
   @IsString()
-  @MinLength(8)
   @IsOptional()
+  @Matches(/^$|^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/, {
+    message:
+      "Password must be empty or at least 8 characters long, including one uppercase letter, one digit, and no special characters except @$!%*?&.",
+  })
   password?: string;
 
   @IsString()
@@ -28,6 +32,10 @@ export default class UserUpdateDto {
   @IsString()
   @IsOptional()
   role?: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string;
 
   @ValidateNested()
   @Type(() => AddressUpdateDto)
@@ -54,5 +62,6 @@ export class AddressUpdateDto {
 
   @IsNumber()
   @IsOptional()
+  @Transform(({ value }) => Number(value) || 0)
   postalCode?: number;
 }

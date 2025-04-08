@@ -18,6 +18,12 @@ AppDataSource.initialize()
 const app = express();
 const port = process.env.PORT || 8181;
 
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS,
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

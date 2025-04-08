@@ -21,7 +21,7 @@ export default class UserService {
         userData.address.street,
         userData.address.number,
         userData.address.city,
-        userData.address.postalCode
+        userData.address.postalCode || 0
       );
 
       const user = await this.userRepository.create({
@@ -67,6 +67,10 @@ export default class UserService {
 
       if (updateData.role !== undefined) {
         user.role = updateData.role;
+      }
+
+      if (updateData.status !== undefined) {
+        user.status = updateData.status;
       }
 
       return user.save();
