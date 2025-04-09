@@ -22,7 +22,7 @@ export default class AuthService {
   async login(loginDto: LoginDto) {
     try {
       const user = await this.userRepository.findByEmail(loginDto.email);
-
+      
       const isValidPassword = await user.validatePassword(loginDto.password);
       if (!isValidPassword) {
         throw new CustomError("Invalid credentials");
@@ -33,7 +33,7 @@ export default class AuthService {
 
       const payload = {
         userId: user.id,
-        role: user.role,
+        role: user.role.name,
         email: user.email,
       };
 
@@ -45,7 +45,10 @@ export default class AuthService {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          role: user.role,
+          role: {
+            name: user.role.name,
+            label: user.role.label,
+          },
           avatar: user.avatarUrl,
           // status: user.status,
         },

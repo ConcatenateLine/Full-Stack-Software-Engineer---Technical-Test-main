@@ -7,6 +7,7 @@ const UsersWithAvatarsSummary = `
       SELECT
         COUNT(*) INTO "totalCount"
       FROM "user"
+      LEFT JOIN "role" ON "user"."roleId" = "role"."id"
         WHERE
             CASE
                 WHEN SEARCH_FILTER IS NOT NULL THEN "user"."firstName" ILIKE '%' || SEARCH_FILTER || '%' OR "user"."lastName" ILIKE '%' || SEARCH_FILTER || '%' OR "user"."email" ILIKE '%' || SEARCH_FILTER || '%'
@@ -19,7 +20,7 @@ const UsersWithAvatarsSummary = `
             END
         AND
             CASE
-              WHEN ROLE_FILTER IS NOT NULL THEN "user"."role" = ROLE_FILTER
+              WHEN ROLE_FILTER IS NOT NULL THEN "role"."name" = ROLE_FILTER
               ELSE TRUE
             END;
       RETURN "totalCount";

@@ -20,13 +20,14 @@ const UsersWithAvatars = `
         "user"."email",
         "user"."phoneNumber",
         "user"."status",
-        "user"."role",
+        "role"."name" AS "role",
         "user"."address",
         CASE 
           WHEN "user"."avatar" IS NULL OR "user"."avatar" = '' THEN DOMAIN || '/assets/placeholders/avatarPlaceHolder.webp'
           ELSE CONCAT(DOMAIN, '/uploads/', "user"."avatar")
         END AS "avatar"
       FROM "user"
+      LEFT JOIN "role" ON "user"."roleId" = "role"."id"
         WHERE
             CASE
                 WHEN SEARCH_FILTER IS NOT NULL THEN "user"."firstName" ILIKE '%' || SEARCH_FILTER || '%' OR "user"."lastName" ILIKE '%' || SEARCH_FILTER || '%' OR "user"."email" ILIKE '%' || SEARCH_FILTER || '%'
@@ -39,7 +40,7 @@ const UsersWithAvatars = `
             END
         AND
             CASE
-              WHEN ROLE_FILTER IS NOT NULL THEN "user"."role" = ROLE_FILTER
+              WHEN ROLE_FILTER IS NOT NULL THEN "role"."name" = ROLE_FILTER
               ELSE TRUE
             END
         ORDER BY "user"."id" ASC

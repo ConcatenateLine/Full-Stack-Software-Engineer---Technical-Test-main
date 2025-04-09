@@ -2,7 +2,7 @@ import User from "../entities/User";
 import CustomError from "../../common/errors/CustomError";
 import type { UserFilterType } from "../entities/UserFilterType";
 import type { FilterReturnType } from "../../common/types/FilterReturnType";
-import { UserWithAvatar } from "../entities/UserWithAvatar";
+import UserWithAvatar from "../entities/UserWithAvatar";
 import AppDataSource from "../../../config/database";
 
 export default class UserRepository {
@@ -24,7 +24,7 @@ export default class UserRepository {
     user.phoneNumber = userData.phoneNumber ?? "";
     user.address = userData.address!;
     user.status = userData.status ?? "Active";
-    user.role = userData.role ?? "User";
+    user.role = userData.role!;
     user.avatar = userData.avatar ?? "";
 
     await user.setPassword(userData.password!);
@@ -35,21 +35,33 @@ export default class UserRepository {
   async findByEmail(email: string): Promise<User> {
     return User.findOneOrFail({
       where: { email },
-      select: [
-        "password",
-        "id",
-        "firstName",
-        "lastName",
-        "email",
-        "status",
-        "avatar",
-      ],
+      relations: {
+        role: true,
+      },
+      select: {
+        password: true,
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        status: true,
+        avatar: true,
+        role: {
+          name: true,
+          label: true,
+        },
+      },
     });
   }
 
   async findById(id: number): Promise<User> {
     return User.findOneOrFail({
       where: { id },
+      relations: {
+        role: {
+          permissions: true,
+        },
+      },
     });
   }
 

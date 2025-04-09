@@ -1,0 +1,16 @@
+export enum PermissionEnum {
+  "user:read" = "user:read",
+  "user:create" = "user:create",
+  "user:update" = "user:update",
+  "user:delete" = "user:delete",
+  "role:read" = "role:read",
+  "role:create" = "role:create",
+  "role:update" = "role:update",
+  "role:delete" = "role:delete",
+  "role:assign" = "role:assign",
+  "role:unassign" = "role:unassign",
+  "category:read" = "category:read",
+  "category:create" = "category:create",
+  "category:update" = "category:update",
+  "category:delete" = "category:delete",
+}

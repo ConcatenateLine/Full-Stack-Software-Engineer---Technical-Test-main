@@ -1,6 +1,105 @@
 import type { DataSource } from "typeorm";
 import User from "../features/users/entities/User";
 import bcrypt from "bcryptjs";
+import Role from "../features/auth/entities/Role";
+import Permission from "../features/auth/entities/Permission";
+
+async function generateRoles(dataSource: DataSource) {
+  try {
+    const rolesFound = await Role.find();
+    if (rolesFound.length > 0) {
+      console.log("Roles already exist");
+      return;
+    }
+
+    const roles = [
+      { name: "User", label: "User" },
+      { name: "Admin", label: "Administrator" },
+      { name: "Manager", label: "Manager" },
+      { name: "Supplier", label: "Supplier" },
+      { name: "Employee", label: "Employee" },
+      { name: "Customer", label: "Customer" },
+    ];
+
+    const roleEntities = roles.map((role) => {
+      const roleEntity = new Role();
+      roleEntity.name = role.name;
+      roleEntity.label = role.label;
+      return roleEntity;
+    });
+
+    await dataSource.manager.save(roleEntities);
+
+    console.log(`Successfully created ${roles.length} roles`);
+  } catch (error) {
+    console.error("Error seeding roles:", error);
+  }
+}
+
+async function generatePermissions(dataSource: DataSource) {
+  try {
+    const permissionsFound = await Permission.find();
+    if (permissionsFound.length > 0) {
+      console.log("Permissions already exist");
+      return;
+    }
+
+    const permissions = [
+      { name: "user:read", label: "Read user", description: "Read user profile" },
+      { name: "user:create", label: "Create user", description: "Create a new user" },
+      { name: "user:update", label: "Update user", description: "Update user profile" },
+      { name: "user:delete", label: "Delete user", description: "Delete a user" },
+      { name: "role:read", label: "Read role", description: "Read role details" },
+      { name: "role:create", label: "Create role", description: "Create a new role" },
+      { name: "role:update", label: "Update role", description: "Update role details" },
+      { name: "role:delete", label: "Delete role", description: "Delete a role" },
+      { name: "role:assign", label: "Assign role", description: "Assign a role to a user" },
+      { name: "role:unassign", label: "Unassign role", description: "Unassign a role from a user" },
+      { name: "category:read", label: "Read category", description: "Read category details" },
+      { name: "category:create", label: "Create category", description: "Create a new category" },
+      { name: "category:update", label: "Update category", description: "Update category details" },
+      { name: "category:delete", label: "Delete category", description: "Delete a category" },
+    ];
+
+    const permissionEntities = permissions.map((permission) => {
+      const permissionEntity = new Permission();
+      permissionEntity.name = permission.name;
+      permissionEntity.label = permission.label;
+      permissionEntity.description = permission.description;
+      return permissionEntity;
+    });
+
+    await dataSource.manager.save(permissionEntities);
+
+    const roles = await Role.find();
+
+    const adminRole = roles.find((role) => role.name === "Admin");
+    const managerRole = roles.find((role) => role.name === "Manager");
+
+    if (!adminRole || !managerRole) {
+      throw new Error("Roles for create permissions not found");
+    }
+
+    adminRole.permissions = permissionEntities.filter((permission) => {
+      return (
+        permission.name.includes("user:") ||
+        permission.name.includes("role:") ||
+        permission.name.includes("category:")
+      );
+    });
+
+    managerRole.permissions = permissionEntities.filter((permission) => {
+      return permission.name.includes("category:");
+    });
+
+    await dataSource.manager.save(adminRole);
+    await dataSource.manager.save(managerRole);
+
+    console.log(`Successfully created ${permissions.length} permissions`);
+  } catch (error) {
+    console.error("Error seeding permissions:", error);
+  }
+}
 
 async function generateRandomUser(index: number): Promise<User> {
   const firstNames = [
@@ -43,7 +142,8 @@ async function generateRandomUser(index: number): Promise<User> {
   )}`;
   const password = "password123";
   const status = Math.random() > 0.2 ? "Active" : "Inactive";
-  const role = Math.random() > 0.2 ? "Admin" : "User";
+  const roles = await Role.find();
+  const role = roles[Math.floor(Math.random() * roles.length)];
 
   const user = new User();
   user.firstName = firstName;
@@ -63,7 +163,7 @@ async function generateRandomUser(index: number): Promise<User> {
   return user;
 }
 
-export async function seedUsers(dataSource: DataSource) {
+async function generateUsers(dataSource: DataSource) {
   try {
     const usersFound = await User.find();
     if (usersFound.length > 0) {
@@ -71,7 +171,6 @@ export async function seedUsers(dataSource: DataSource) {
       return;
     }
 
-    // Create 50 users
     const users = [];
     for (let i = 0; i < 50; i++) {
       const user = await generateRandomUser(i);
@@ -79,13 +178,13 @@ export async function seedUsers(dataSource: DataSource) {
     }
 
     const user = new User();
-    
+
     user.firstName = "Gonzalo";
     user.lastName = "Vinegas";
     user.email = "GonzaloVinegas@gmail.com";
     user.phoneNumber = "+1234567890";
     user.status = "Active";
-    user.role = "Admin";
+    user.role = (await Role.findOne({ where: { name: "Admin" } })) as Role;
     user.password = await bcrypt.hash("password123", 10);
     user.address = {
       street: "123 Main St",
@@ -96,11 +195,22 @@ export async function seedUsers(dataSource: DataSource) {
 
     users.push(user);
 
-    // Save all users in one transaction
     await dataSource.manager.save(users);
 
     console.log(`Successfully created ${users.length} users`);
   } catch (error) {
     console.error("Error seeding users:", error);
+  }
+}
+
+export async function seedUsers(dataSource: DataSource) {
+  try {
+    await generateRoles(dataSource);
+    await generatePermissions(dataSource);
+    await generateUsers(dataSource);
+
+    console.log(`Successfully created seed`);
+  } catch (error) {
+    console.error("Error seeding:", error);
   }
 }

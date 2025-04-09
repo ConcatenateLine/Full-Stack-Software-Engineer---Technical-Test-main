@@ -33,16 +33,17 @@ import type { Address } from "../../common/valueObjects/Address";
 	"user"."phoneNumber" AS "phoneNumber",
 	"user"."status" AS "status",
 	"user"."address" AS "address",
-	"user"."role" AS "role",
+	"role"."name" AS "role",
 	CASE 
         WHEN "user"."avatar" IS NULL OR "user"."avatar" = '' THEN NULL
         ELSE CONCAT('http://localhost:8081/api', '/uploads/', "user"."avatar")
     END AS "avatar"
 FROM
 	"user"
+LEFT JOIN "role" ON "user"."roleId" = "role"."id"
     `,
 })
-export class UserWithAvatar {
+export default class UserWithAvatar {
   @ViewColumn()
   id!: number;
 

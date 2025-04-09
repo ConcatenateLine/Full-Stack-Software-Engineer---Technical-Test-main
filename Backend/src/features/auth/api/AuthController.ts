@@ -68,7 +68,17 @@ export default class AuthController {
       if (req.user) {
         res.status(200).json({
           message: "Token is valid",
-          user: req.user,
+          user: {
+            id: req.user.id,
+            firstName: req.user.firstName,
+            lastName: req.user.lastName,
+            email: req.user.email,
+            role: {
+              name: req.user.role.name,
+              label: req.user.role.label,
+            },
+            avatar: req.user.avatar,
+          },
         });
       } else {
         throw new CustomError("Unauthorized", "401", {}, 401);

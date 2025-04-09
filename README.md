@@ -78,7 +78,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
        - [x] **Pagination**: Buttons for navigating between pages.
      - [x] Show a loading spinner while data is being fetched.
 
-    ``` Use Skeleton ```
+   `Use Skeleton`
 
 3. **Add User Form**
 
@@ -169,18 +169,9 @@ You are tasked with creating a **full-stack application** for managing users. Th
 **Note**: User credentials for login are:
 
 ```javascript
-const user = new User();
-user.firstName = "Gonzalo";
-user.lastName = "Vinegas";
 user.email = "GonzaloVinegas@gmail.com";
-user.phoneNumber = "+1234567890";
-user.status = "Active";
 user.role = "Admin";
-user.password = await bcrypt.hash("password123", 10);
-user.address = {
-  street: "123 Main St",
-  number: "123",
-  city: "City",
-  postalCode: 12345,
-};
+user.password = "password123";
+//master password: password123
+//for all other users
 ```

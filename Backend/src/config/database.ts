@@ -2,7 +2,9 @@ import { DataSource } from "typeorm";
 import User from "../features/users/entities/User";
 import dotenv from "dotenv";
 import TokenBlacklist from "../features/auth/entities/TokenBlackList";
-import { UserWithAvatar } from "../features/users/entities/UserWithAvatar";
+import UserWithAvatar from "../features/users/entities/UserWithAvatar";
+import Permission from "../features/auth/entities/Permission";
+import Role from "../features/auth/entities/Role";
 
 dotenv.config();
 
@@ -13,8 +15,9 @@ const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [User, TokenBlacklist, UserWithAvatar],
-  synchronize: true,
+  entities: [TokenBlacklist, Role, Permission, User, UserWithAvatar],
+  // synchronize: true,
+  // dropSchema: true,
   logging: true,
   migrations: ["src/config/migrations/*.ts"],
   migrationsTableName: "migrations",

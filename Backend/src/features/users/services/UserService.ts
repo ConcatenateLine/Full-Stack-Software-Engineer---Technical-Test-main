@@ -6,10 +6,14 @@ import CustomError from "../../common/errors/CustomError";
 import type UserUpdateDto from "../dtos/UserUpdateDto";
 import type UserFilterDto from "../dtos/UserFiltersDto";
 import type UserPaginationDto from "../dtos/UserPaginationDto";
-import type { UserWithAvatar } from "../entities/UserWithAvatar";
+import type UserWithAvatar from "../entities/UserWithAvatar";
+import type RoleRepository from "../../auth/repositories/RoleRepository";
 
 export default class UserService {
-  constructor(private readonly userRepository: UserRepository) {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly roleRepository: RoleRepository
+  ) {
     if (!this.userRepository) {
       throw new Error("UserRepository is required");
     }
@@ -17,6 +21,12 @@ export default class UserService {
 
   async create(userData: UserCreateDto) {
     try {
+      const role = await this.roleRepository.findByName(userData.role);
+
+      if (!role) {
+        throw new CustomError("Role not found");
+      }
+
       const address = new Address(
         userData.address.street,
         userData.address.number,
@@ -26,6 +36,7 @@ export default class UserService {
 
       const user = await this.userRepository.create({
         ...userData,
+        role: role,
         address: address,
       });
 
@@ -66,7 +77,12 @@ export default class UserService {
       }
 
       if (updateData.role !== undefined) {
-        user.role = updateData.role;
+        const role = await this.roleRepository.findByName(updateData.role);
+
+        if (!role) {
+          throw new CustomError("Role not found");
+        }
+        user.role = role;
       }
 
       if (updateData.status !== undefined) {

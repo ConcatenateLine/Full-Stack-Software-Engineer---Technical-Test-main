@@ -48,7 +48,7 @@ export default class AuthMiddleware {
         throw new CustomError("Invalid token", "401", {}, 401);
       }
 
-      req.user = user;
+      req.user = { ...user, avatarUrl: user.avatarUrl };
       next();
     } catch (error) {
       if (error instanceof CustomError) {
