@@ -176,3 +176,6 @@ dist
 
 # bun
 .lockb
+
+# multer
+uploads

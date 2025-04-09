@@ -13,5 +13,5 @@ export type User = {
     city: string;
     postalCode: string;
   };
-  profilePicture?: string;
+  avatar?: File;
 };

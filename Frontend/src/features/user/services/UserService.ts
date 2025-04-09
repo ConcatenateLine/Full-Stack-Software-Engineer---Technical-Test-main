@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { User } from "../types/UserType";
 import { Pagination } from "@/common/types/TableTypes";
+import convertToFormData from "@/common/utils/ConvertToFormData";
 
 export type UsersResponse = {
   data: User[];
@@ -37,19 +38,27 @@ export const UserApi = createApi({
     }),
     addUser: builder.mutation({
       invalidatesTags: ["Users"],
-      query: (user: User) => ({
-        url: "/users",
-        method: "POST",
-        body: { ...user, profilePicture: "develop" },
-      }),
+      query: (user: User) => {
+        const formData = convertToFormData(user);
+
+        return {
+          url: "/users",
+          method: "POST",
+          body: formData,
+        };
+      },
     }),
     updateUser: builder.mutation({
       invalidatesTags: ["Users"],
-      query: (user: Partial<User>) => ({
-        url: `/users/${user.id}`,
-        method: "PUT",
-        body: { ...user, profilePicture: "develop" },
-      }),
+      query: (user: Partial<User>) => {
+        const formData = convertToFormData(user);
+
+        return {
+          url: `/users/${user.id}`,
+          method: "PUT",
+          body: formData,
+        };
+      },
     }),
     getUsersPaginated: builder.infiniteQuery<
       UsersResponse,

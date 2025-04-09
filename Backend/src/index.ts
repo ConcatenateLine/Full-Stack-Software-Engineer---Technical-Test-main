@@ -5,10 +5,17 @@ import bodyParser from "body-parser";
 import apiRouter from "./api";
 import cors from "cors";
 import { seedUsers } from "./config/seed";
+import path from "path";
+import { fileURLToPath } from "url";
+import { createFunctions } from "./config/createFunctions";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 AppDataSource.initialize()
   .then(() => {
     console.log("Database connected");
+    createFunctions(AppDataSource);
     seedUsers(AppDataSource);
   })
   .catch((error) =>
@@ -26,6 +33,9 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/api/assets", express.static(path.join(__dirname, "./assets")));
+app.use("/api/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api", apiRouter);
 

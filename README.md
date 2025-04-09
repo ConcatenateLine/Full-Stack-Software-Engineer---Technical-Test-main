@@ -48,7 +48,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
      - [x] `role` (Admin/User)
      - [x] `status` (Active/Inactive)
      - [x] `address` (object with fields: street, number, city, postalCode)
-     - [] `profilePicture` (URL)
+     - [x] `profilePicture` (URL)
    - [x] Seed the database with 50 sample users.
 
 ---
@@ -98,12 +98,10 @@ You are tasked with creating a **full-stack application** for managing users. Th
        - Google Maps Integration:
          - Include a Google Maps component where users can either type their address (autocomplete) or select a location on the map.
          - When a location is selected, the form fields for the address should be automatically populated.
-     - **Profile Picture**:
-       - Allow the user to upload an image file (e.g., `.jpg`, `.png`).
-       - Use a library like **Multer** on the backend to upload the image and save its URL in the database.
+     - [x] **Profile Picture**:
+       - [x] Allow the user to upload an image file (e.g., `.jpg`, `.png`).
+       - [x] Use a library like **Multer** on the backend to upload the image and save its URL in the database.
    - [x] Validate the form and show appropriate error messages.
-
-   `Fail some validations on update`
 
 4. **Edit User**
 

@@ -57,7 +57,7 @@ async function generateRandomUser(index: number): Promise<User> {
     street: "123 Main St",
     number: "123",
     city: "City",
-    postalCode: 12345,
+    postalCode: "12345",
   };
 
   return user;
@@ -91,7 +91,7 @@ export async function seedUsers(dataSource: DataSource) {
       street: "123 Main St",
       number: "123",
       city: "City",
-      postalCode: 12345,
+      postalCode: "12345",
     };
 
     users.push(user);

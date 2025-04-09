@@ -3,10 +3,10 @@ import {
   IsString,
   ValidateNested,
   IsNumber,
-  MinLength,
   Matches,
 } from "class-validator";
-import { Transform, Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
+import { AddressCreateDto } from "./UserCreateDto";
 
 export default class UserUpdateDto {
   @IsString()
@@ -27,6 +27,9 @@ export default class UserUpdateDto {
 
   @IsString()
   @IsOptional()
+  @Matches(/^$|^(\+?\d{1,4})-(\d{10})$/, {
+    message: "Phone number must be empty or in the format: +1234-1234567890",
+  })
   phoneNumber?: string;
 
   @IsString()
@@ -38,13 +41,16 @@ export default class UserUpdateDto {
   status?: string;
 
   @ValidateNested()
-  @Type(() => AddressUpdateDto)
   @IsOptional()
+  @Transform(({ value }) =>
+    plainToInstance(AddressCreateDto, JSON.parse(value))
+  )
+  @Type(() => AddressCreateDto)
   address?: AddressUpdateDto;
 
   @IsString()
   @IsOptional()
-  profilePicture?: string;
+  avatar?: string;
 }
 
 export class AddressUpdateDto {
@@ -60,8 +66,10 @@ export class AddressUpdateDto {
   @IsOptional()
   city?: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  @Transform(({ value }) => Number(value) || 0)
-  postalCode?: number;
+  @Matches(/^\d{5}$/, {
+    message: "Zip code must be 5 digits",
+  })
+  postalCode?: string;
 }

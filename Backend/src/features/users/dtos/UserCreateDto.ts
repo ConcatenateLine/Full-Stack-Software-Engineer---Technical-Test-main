@@ -1,4 +1,9 @@
-import { Transform, Type } from "class-transformer";
+import {
+  plainToInstance,
+  Transform,
+  TransformPlainToInstance,
+  Type,
+} from "class-transformer";
 import {
   IsEmail,
   IsNotEmpty,
@@ -6,7 +11,6 @@ import {
   IsOptional,
   IsString,
   Matches,
-  MinLength,
   ValidateNested,
 } from "class-validator";
 
@@ -33,6 +37,9 @@ export default class UserCreateDto {
 
   @IsString()
   @IsOptional()
+  @Matches(/^$|^(\+?\d{1,4})-(\d{10})$/, {
+    message: "Phone number must be empty or in the format: +1234-1234567890",
+  })
   phoneNumber?: string;
 
   @IsString()
@@ -44,12 +51,16 @@ export default class UserCreateDto {
   status!: string;
 
   @ValidateNested()
+  @Transform(({ value }) =>
+    plainToInstance(AddressCreateDto, JSON.parse(value))
+  )
   @Type(() => AddressCreateDto)
   address!: AddressCreateDto;
 
-  @IsString()
-  @IsNotEmpty()
-  profilePicture!: string;
+  @IsString({
+    message: "Avatar is a necessary field",
+  })
+  avatar!: string;
 }
 
 export class AddressCreateDto {
@@ -65,8 +76,10 @@ export class AddressCreateDto {
   @IsNotEmpty()
   city!: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => Number(value) || 0)
-  postalCode?: number;
+  @Matches(/^\d{5}$/, {
+    message: "Zip code must be 5 digits"
+  })
+  postalCode!: string;
 }

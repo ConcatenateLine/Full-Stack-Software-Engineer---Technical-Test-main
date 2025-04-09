@@ -46,8 +46,8 @@ export default class AuthService {
           lastName: user.lastName,
           email: user.email,
           role: user.role,
+          avatar: user.avatarUrl,
           // status: user.status,
-          //   profilePicture: user.profilePicture,
         },
         token,
       };
@@ -99,8 +99,8 @@ export default class AuthService {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        avatar: user.avatarUrl || undefined,
         // status: user.status,
-        // profilePicture: user.profilePicture,
       };
     } catch (error) {
       if (error instanceof CustomError) {

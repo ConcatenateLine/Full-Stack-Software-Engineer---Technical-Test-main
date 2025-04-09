@@ -5,8 +5,8 @@ import { EntityNotFoundError, QueryFailedError } from "typeorm";
 import CustomError from "../../common/errors/CustomError";
 import type UserUpdateDto from "../dtos/UserUpdateDto";
 import type UserFilterDto from "../dtos/UserFiltersDto";
-import type User from "../entities/User";
 import type UserPaginationDto from "../dtos/UserPaginationDto";
+import type { UserWithAvatar } from "../entities/UserWithAvatar";
 
 export default class UserService {
   constructor(private readonly userRepository: UserRepository) {
@@ -21,7 +21,7 @@ export default class UserService {
         userData.address.street,
         userData.address.number,
         userData.address.city,
-        userData.address.postalCode || 0
+        userData.address.postalCode || ""
       );
 
       const user = await this.userRepository.create({
@@ -61,7 +61,7 @@ export default class UserService {
           updateData.address.street || "",
           updateData.address.number || "",
           updateData.address.city || "",
-          updateData.address.postalCode || 0
+          updateData.address.postalCode || ""
         );
       }
 
@@ -71,6 +71,10 @@ export default class UserService {
 
       if (updateData.status !== undefined) {
         user.status = updateData.status;
+      }
+
+      if (updateData.avatar !== undefined) {
+        user.avatar = updateData.avatar;
       }
 
       return user.save();
@@ -121,12 +125,12 @@ export default class UserService {
   async findAll(
     filter: UserFilterDto,
     pagination: UserPaginationDto
-  ): Promise<{ data: User[]; pagination: UserPaginationDto }> {
+  ): Promise<{ data: UserWithAvatar[]; pagination: UserPaginationDto }> {
     try {
       const { role, status, search } = filter;
       const { page, limit } = pagination;
 
-      const { items, count, total } = await this.userRepository.findAll({
+      const { items, total } = await this.userRepository.findAll({
         role,
         status,
         search,

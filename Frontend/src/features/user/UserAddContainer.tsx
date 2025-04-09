@@ -24,6 +24,8 @@ import { useNavigate } from "react-router";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useAddUserMutation } from "./services/UserService";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
 
 const stringSchema = (min: number, max: number, fieldName: string) =>
   z
@@ -39,6 +41,7 @@ const addressSchema = z.object({
 });
 
 const formSchema = z.object({
+  avatar: z.instanceof(File, { message: "The avatar must be a image!" }),
   firstName: stringSchema(2, 50, "First name"),
   lastName: stringSchema(2, 50, "Last name"),
   email: z.string().email("Invalid email address"),
@@ -61,8 +64,10 @@ const formSchema = z.object({
 });
 
 const UserAddContainer = () => {
+  const MAX_SIZE = 1 * 1024 * 1024; // 1MB
   const navigate = useNavigate();
   const [addUser] = useAddUserMutation();
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -104,13 +109,10 @@ const UserAddContainer = () => {
       console.log(err);
 
       if (err && err.data && err.data.errors) {
-        // Handle validation errors
         err.data.errors.forEach((error: any) => {
-          // Handle nested properties
           const path = error.property.split(".").join(".");
 
           if (error.children && error.children.length > 0) {
-            // Handle nested errors
             error.children.forEach((child: any) => {
               const childPath = path
                 ? `${path}.${child.property}`
@@ -124,7 +126,6 @@ const UserAddContainer = () => {
               );
             });
           } else {
-            // Handle direct constraints
             Object.values(error.constraints).forEach((constraint: unknown) => {
               form.setError(path, {
                 message: constraint as string,
@@ -144,6 +145,55 @@ const UserAddContainer = () => {
     <div className="p-9">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="grid grid-cols-2 gap-4">
+            <Avatar className="w-36 h-36 mx-auto">
+              <AvatarImage src={avatarUrl} alt="@Avatar" />
+              <AvatarFallback>@Avatar</AvatarFallback>
+            </Avatar>
+            <FormField
+              control={form.control}
+              name="avatar"
+              render={(_) => (
+                <FormItem>
+                  <FormLabel htmlFor="avatar">Avatar</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="avatar"
+                      className="cursor-pointer"
+                      type="file"
+                      accept="image/png, image/jpeg, image/jpg"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (
+                            ["image/png", "image/jpeg", "image/jpg"].includes(
+                              file.type
+                            ) &&
+                            file.size < MAX_SIZE
+                          ) {
+                            form.clearErrors("avatar");
+                            form.setValue("avatar", file);
+                            setAvatarUrl(URL.createObjectURL(file));
+                          } else {
+                            setAvatarUrl(undefined);
+                            form.resetField("avatar");
+                            form.setError("avatar", {
+                              message: "File size exceeds 1MB.",
+                            });
+                          }
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>
+                    Upload an image file (e.g., JPEG, PNG) within the allowed
+                    size limit.
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-3">
               <FormField

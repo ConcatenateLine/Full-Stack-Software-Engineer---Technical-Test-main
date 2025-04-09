@@ -17,13 +17,17 @@ export default class UserController {
 
   async create(req: Request, res: Response) {
     try {
+      if (req.file?.path) {
+        req.body.avatar = req.file.filename;
+      }
+
       const userDto = plainToInstance(UserCreateDto, req.body);
       await validateOrReject(userDto, {
         validationError: { target: false, value: false },
       });
 
       const user = await this.userService.create(userDto);
-      const { password, ...userWithoutPassword } = user;
+      const { password, createdAt, updatedAt, ...userWithoutPassword } = user;
       res.status(201).json(userWithoutPassword);
     } catch (error) {
       if (error instanceof Array) {
@@ -38,6 +42,10 @@ export default class UserController {
 
   async update(req: Request, res: Response) {
     try {
+      if (req.file?.path) {
+        req.body.avatar = req.file.filename;
+      }
+
       const updateDto = plainToInstance(UserUpdateDto, req.body);
       await validateOrReject(updateDto, {
         validationError: { target: false, value: false },
@@ -49,7 +57,8 @@ export default class UserController {
       }
 
       const updatedUser = await this.userService.update(userId, updateDto);
-      const { password, ...userWithoutPassword } = updatedUser;
+      const { password, createdAt, updatedAt, ...userWithoutPassword } =
+        updatedUser;
       res.status(200).json(userWithoutPassword);
     } catch (error) {
       if (error instanceof Array) {

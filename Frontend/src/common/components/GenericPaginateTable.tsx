@@ -47,7 +47,7 @@ import {
   TagsIcon,
 } from "lucide-react";
 import { UsersResponse } from "@/features/user/services/UserService";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface GenericPaginateTableProps<T> {
   id: string;
@@ -136,9 +136,12 @@ export const GenericPaginateTable = <T,>({
     setFilters(newFilter);
   };
 
-  const handleSearch = Debounce((value: string) => {
-    handleFiltersChange("search", value);
-  }, 1000);
+  const handleSearch = useCallback(
+    Debounce((value: string) => {
+      handleFiltersChange("search", value);
+    }, 1000),
+    []
+  );
 
   const handleClear = () => {
     setFilters({});

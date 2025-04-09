@@ -2,9 +2,12 @@ import User from "../entities/User";
 import CustomError from "../../common/errors/CustomError";
 import type { UserFilterType } from "../entities/UserFilterType";
 import type { FilterReturnType } from "../../common/types/FilterReturnType";
-import { Brackets } from "typeorm";
+import { UserWithAvatar } from "../entities/UserWithAvatar";
+import AppDataSource from "../../../config/database";
 
 export default class UserRepository {
+  domain = process.env.Domain || "";
+
   async create(userData: Partial<User>): Promise<User> {
     const existingUser = await User.findOne({
       where: { email: userData.email },
@@ -22,6 +25,7 @@ export default class UserRepository {
     user.address = userData.address!;
     user.status = userData.status ?? "Active";
     user.role = userData.role ?? "User";
+    user.avatar = userData.avatar ?? "";
 
     await user.setPassword(userData.password!);
 
@@ -31,7 +35,15 @@ export default class UserRepository {
   async findByEmail(email: string): Promise<User> {
     return User.findOneOrFail({
       where: { email },
-      select: ["password", "id", "firstName", "lastName", "email", "status"],
+      select: [
+        "password",
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "status",
+        "avatar",
+      ],
     });
   }
 
@@ -47,40 +59,17 @@ export default class UserRepository {
     search,
     page,
     limit,
-  }: UserFilterType): Promise<FilterReturnType<User>> {
-    const searchPattern = `%${search}%`;
-    const conditions: any[] = [];
-    const params: Record<string, any> = {};
+  }: UserFilterType): Promise<FilterReturnType<UserWithAvatar>> {
+    const items = await AppDataSource.query(
+      `SELECT * FROM get_users_with_avatar($1, $2, $3, $4, $5, $6)`,
+      [this.domain, (page - 1) * limit, limit, status, role, search]
+    );
 
-    const queryBuilder = User.createQueryBuilder("user");
+    const summary = await AppDataSource.query(
+      `SELECT * FROM get_users_with_avatar_summary($1, $2, $3, $4, $5, $6)`,
+      [this.domain, (page - 1) * limit, limit, status, role, search]
+    );
 
-    if (search) {
-      queryBuilder.where(
-        new Brackets((qb) => {
-          qb.where("user.firstName ILIKE :searchPattern", { searchPattern })
-            .orWhere("user.lastName ILIKE :searchPattern")
-            .orWhere("user.email ILIKE :searchPattern");
-        })
-      );
-    }
-    if (role) {
-      conditions.push("user.role = :role");
-      params.role = role;
-    }
-    if (status) {
-      conditions.push("user.status = :status");
-      params.status = status;
-    }
-    if (conditions.length > 0) {
-      queryBuilder.andWhere(conditions.join(" AND "), params);
-    }
-
-    queryBuilder.skip((page - 1) * limit).take(limit);
-
-    const total = await queryBuilder.getCount();
-
-    const [items, count] = await queryBuilder.getManyAndCount();
-
-    return { items, count, total };
+    return { items, total: Number(summary[0].get_users_with_avatar_summary) };
   }
 }
