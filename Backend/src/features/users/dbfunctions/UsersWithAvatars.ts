@@ -23,7 +23,7 @@ const UsersWithAvatars = `
         "user"."role",
         "user"."address",
         CASE 
-          WHEN "user"."avatar" IS NULL OR "user"."avatar" = '' THEN DOMAIN || '/assets/placeholders/imagePlaceHolder.svg'
+          WHEN "user"."avatar" IS NULL OR "user"."avatar" = '' THEN DOMAIN || '/assets/placeholders/avatarPlaceHolder.webp'
           ELSE CONCAT(DOMAIN, '/uploads/', "user"."avatar")
         END AS "avatar"
       FROM "user"

@@ -18,7 +18,7 @@ import { ComponentProps } from "react";
 
 const DashboardSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

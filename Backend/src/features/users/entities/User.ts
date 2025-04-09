@@ -63,6 +63,9 @@ export default class User extends BaseEntity {
   @Expose()
   get avatarUrl(): string | null {
     const domain = process.env.DOMAIN || "/api";
-    return this.avatar ? `${domain}/uploads/${this.avatar}` : null;
+
+    return this.avatar
+      ? `${domain}/uploads/${this.avatar}`
+      : `${domain}/assets/placeholders/avatarPlaceHolder.webp`;
   }
 }

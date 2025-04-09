@@ -172,7 +172,7 @@ const UserUpdateContainer = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-2 gap-4">
-              <Avatar className="w-36 h-36 mx-auto">
+              <Avatar className="w-36 h-36 mx-auto bg-[var(--secondary)]">
                 <AvatarImage src={avatarUrl} alt="@Avatar" />
                 <AvatarFallback>@Avatar</AvatarFallback>
               </Avatar>

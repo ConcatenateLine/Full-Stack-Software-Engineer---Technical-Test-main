@@ -44,7 +44,7 @@ const NavUser = () => {
               size="lg"
               className="cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="h-8 w-8 rounded-lg bg-[var(--secondary)]">
                 <AvatarImage
                   src={user.avatar}
                   alt={user.firstName + " avatar"}
@@ -68,12 +68,17 @@ const NavUser = () => {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.firstName + " avatar"} />
+                <Avatar className="h-8 w-8 rounded-lg bg-[var(--secondary)]">
+                  <AvatarImage
+                    src={user.avatar}
+                    alt={user.firstName + " avatar"}
+                  />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.firstName + " " + user.lastName}</span>
+                  <span className="truncate font-semibold">
+                    {user.firstName + " " + user.lastName}
+                  </span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
