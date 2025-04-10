@@ -48,6 +48,7 @@ import {
 } from "lucide-react";
 import { UsersResponse } from "@/features/user/services/UserService";
 import { useCallback, useState } from "react";
+import { CustomAlertDestructive } from "./CustomAlertDestructive";
 
 interface GenericPaginateTableProps<T> {
   id: string;
@@ -70,15 +71,22 @@ export const GenericPaginateTable = <T,>({
     useTableState(id);
   const [search, setSearch] = useState(filters["search"] || "");
 
-  const { data, isLoading, isFetching, fetchNextPage, fetchPreviousPage } =
-    query(
-      {
-        filters,
-        pageSize,
-        pageParam: currentPage,
-      },
-      { pageParam: currentPage }
-    );
+  const {
+    data,
+    isLoading,
+    isFetching,
+    fetchNextPage,
+    fetchPreviousPage,
+    isError,
+    error,
+  } = query(
+    {
+      filters,
+      pageSize,
+      pageParam: currentPage,
+    },
+    { pageParam: currentPage }
+  );
 
   const currentPageData = data?.pages.find(
     (page: UsersResponse) => page.pagination.page === currentPage
@@ -153,6 +161,19 @@ export const GenericPaginateTable = <T,>({
       defaultValue="outline"
       className="flex w-full flex-col justify-start gap-6 py-6"
     >
+      {isError && (
+        <CustomAlertDestructive
+          message={
+            error instanceof Error
+              ? error.message
+              : typeof error?.error === "string"
+              ? error?.error
+              : typeof error?.data?.error === "string"
+              ? error.data.error
+              : "Something went wrong"
+          }
+        />
+      )}
       <div className="flex items-center justify-between px-4 lg:px-6 gap-2">
         <Label htmlFor="view-selector" className="sr-only">
           View

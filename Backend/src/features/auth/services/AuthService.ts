@@ -5,6 +5,7 @@ import JwtService from "./JwtService";
 import type LoginDto from "../dtos/LoginDto";
 import type TokenBlacklistRepository from "../repositories/TokenBlackListRepository";
 import type User from "../../users/entities/User";
+import type Permission from "../entities/Permission";
 
 export default class AuthService {
   constructor(
@@ -22,7 +23,7 @@ export default class AuthService {
   async login(loginDto: LoginDto) {
     try {
       const user = await this.userRepository.findByEmail(loginDto.email);
-      
+
       const isValidPassword = await user.validatePassword(loginDto.password);
       if (!isValidPassword) {
         throw new CustomError("Invalid credentials");
@@ -30,6 +31,10 @@ export default class AuthService {
       if (user.status !== "Active") {
         throw new CustomError("User is not active");
       }
+
+      const rolePermissionNames = user.role.permissions.map(
+        (rolePermission: Permission) => rolePermission.name
+      );
 
       const payload = {
         userId: user.id,
@@ -48,6 +53,7 @@ export default class AuthService {
           role: {
             name: user.role.name,
             label: user.role.label,
+            permissions: rolePermissionNames,
           },
           avatar: user.avatarUrl,
           // status: user.status,

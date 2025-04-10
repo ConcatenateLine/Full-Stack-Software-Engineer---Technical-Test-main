@@ -5,6 +5,7 @@ import type { CustomRequestType } from "../../common/types/CustomRequestType";
 import AuthService from "../services/AuthService";
 import UserRepository from "../../users/repositories/UserRepository";
 import TokenBlacklistRepository from "../repositories/TokenBlackListRepository";
+import type Permission from "../entities/Permission";
 
 export default class AuthMiddleware {
   private static authService: AuthService = new AuthService(
@@ -48,7 +49,18 @@ export default class AuthMiddleware {
         throw new CustomError("Invalid token", "401", {}, 401);
       }
 
-      req.user = { ...user, avatarUrl: user.avatarUrl };
+      const rolePermissionNames = user.role?.permissions.map(
+        (rolePermission: Permission) => rolePermission.name
+      );
+
+      req.user = {
+        ...user,
+        avatarUrl: user.avatarUrl,
+        role: {
+          ...user.role,
+          permissions: rolePermissionNames,
+        },
+      };
       next();
     } catch (error) {
       if (error instanceof CustomError) {

@@ -2,7 +2,6 @@ import type { NextFunction, Response } from "express";
 import CustomError from "../../common/errors/CustomError";
 import type { CustomRequestType } from "../../common/types/CustomRequestType";
 import type { PermissionEnum } from "../enums/PermissionsEnum";
-import type Permission from "../entities/Permission";
 
 export default class PermissionsMiddleware {
   static checkPermissions(requiredPermissions: PermissionEnum[]) {
@@ -19,12 +18,8 @@ export default class PermissionsMiddleware {
           );
         }
 
-        const rolePermissionNames = user.role.permissions.map(
-          (rolePermission: Permission) => rolePermission.name
-        );
-
         const hasPermissions = requiredPermissions.some((permission) => {
-          return rolePermissionNames.includes(permission);
+          return user.role.permissions.includes(permission);
         });
 
         if (!hasPermissions) {

@@ -28,7 +28,7 @@ const UserContainer = () => {
   const columns = UserColumns({
     edit: (row: Row<z.infer<typeof schema>>) => {
       dispatch(setSelectedUser(row.original as Partial<User>));
-      navigate(`user/${row.original.id}/edit`);
+      navigate(`/dashboard/user/${row.original.id}/edit`);
     },
     delete: (row) => handleDelete(row),
   });

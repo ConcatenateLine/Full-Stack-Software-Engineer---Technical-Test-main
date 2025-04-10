@@ -18,7 +18,7 @@ const AppDataSource = new DataSource({
   entities: [TokenBlacklist, Role, Permission, User, UserWithAvatar],
   // synchronize: true,
   // dropSchema: true,
-  logging: true,
+  // logging: true,
   migrations: ["src/config/migrations/*.ts"],
   migrationsTableName: "migrations",
 });

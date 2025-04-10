@@ -104,7 +104,7 @@ const UserAddContainer = () => {
       }).unwrap();
 
       toast.success("User added successfully");
-      navigate("/dashboard");
+      navigate("/dashboard/users");
     } catch (err: any) {
       console.log(err);
 
@@ -146,7 +146,7 @@ const UserAddContainer = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-2 gap-4">
-            <Avatar className="w-36 h-36 mx-auto bg-[var(--secondary)]">
+            <Avatar className="w-36 h-36 mx-auto bg-secondary">
               <AvatarImage src={avatarUrl} alt="@Avatar" />
               <AvatarFallback>@Avatar</AvatarFallback>
             </Avatar>

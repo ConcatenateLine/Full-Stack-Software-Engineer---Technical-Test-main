@@ -116,8 +116,41 @@ You are tasked with creating a **full-stack application** for managing users. Th
 
 ### Bonus Features (Optional)
 
-- Implement a **Role-Based Access Control**:
-  - Allow only Admin users to access the dashboard and perform user management.
+- [x] Implement a **Role-Based Access Control**:
+
+  - [x] Allow only Admin users to access the dashboard and perform user management.
+
+  ```javascript
+
+  On the backend and frontend, implement role-based access control (RBAC) to ensure that only the roles permitted can access the sections marked with the role permissions.
+
+  THE ROLES SEED ARE:
+  - User
+  - Admin
+  - Manager
+  - Supplier
+  - Employee
+  - Customer
+
+  AND THE PERMISSIONS ARE:
+  - application:all      - user:read
+  - user:create          - user:update
+  - user:delete          - role:read
+  - role:create          - role:update
+  - role:delete          - role:assign
+  - role:assign          - role:unassign
+  - category:read        - category:create
+  - category:update      - category:delete
+  - model:read           - model:create
+  - model:update         - model:delete
+  - settings:read        - settings:create
+  - settings:update      - settings:delete
+  - project:read         - project:create
+  - project:update       - project:delete
+
+  The permissions are assigned to the roles Without criteria, only for demo purposes.
+  ```
+
 - [x] Use **TypeScript** for both the frontend and backend.
 - [x] Style the frontend using **Material-UI**, **TailwindCSS**, or another modern UI library.
 

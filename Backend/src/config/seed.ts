@@ -44,24 +44,145 @@ async function generatePermissions(dataSource: DataSource) {
       return;
     }
 
-    const permissions = [
-      { name: "user:read", label: "Read user", description: "Read user profile" },
-      { name: "user:create", label: "Create user", description: "Create a new user" },
-      { name: "user:update", label: "Update user", description: "Update user profile" },
-      { name: "user:delete", label: "Delete user", description: "Delete a user" },
-      { name: "role:read", label: "Read role", description: "Read role details" },
-      { name: "role:create", label: "Create role", description: "Create a new role" },
-      { name: "role:update", label: "Update role", description: "Update role details" },
-      { name: "role:delete", label: "Delete role", description: "Delete a role" },
-      { name: "role:assign", label: "Assign role", description: "Assign a role to a user" },
-      { name: "role:unassign", label: "Unassign role", description: "Unassign a role from a user" },
-      { name: "category:read", label: "Read category", description: "Read category details" },
-      { name: "category:create", label: "Create category", description: "Create a new category" },
-      { name: "category:update", label: "Update category", description: "Update category details" },
-      { name: "category:delete", label: "Delete category", description: "Delete a category" },
+    const Permissions = [
+      {
+        name: "application:all",
+        label: "All Application",
+        description: "Access all resources in the application",
+      },
+      {
+        name: "user:read",
+        label: "Read User",
+        description: "Read user profile",
+      },
+      {
+        name: "user:create",
+        label: "Create User",
+        description: "Create a new user",
+      },
+      {
+        name: "user:update",
+        label: "Update User",
+        description: "Update user profile",
+      },
+      {
+        name: "user:delete",
+        label: "Delete User",
+        description: "Delete a user",
+      },
+      {
+        name: "role:read",
+        label: "Read Role",
+        description: "Read role details",
+      },
+      {
+        name: "role:create",
+        label: "Create Role",
+        description: "Create a new role",
+      },
+      {
+        name: "role:update",
+        label: "Update Role",
+        description: "Update role details",
+      },
+      {
+        name: "role:delete",
+        label: "Delete Role",
+        description: "Delete a role",
+      },
+      {
+        name: "role:assign",
+        label: "Assign Role",
+        description: "Assign a role to a user",
+      },
+      {
+        name: "role:unassign",
+        label: "Unassign Role",
+        description: "Unassign a role from a user",
+      },
+      {
+        name: "category:read",
+        label: "Read Category",
+        description: "Read category details",
+      },
+      {
+        name: "category:create",
+        label: "Create Category",
+        description: "Create a new category",
+      },
+      {
+        name: "category:update",
+        label: "Update Category",
+        description: "Update category details",
+      },
+      {
+        name: "category:delete",
+        label: "Delete Category",
+        description: "Delete a category",
+      },
+      {
+        name: "model:read",
+        label: "Read Model",
+        description: "Read model details",
+      },
+      {
+        name: "model:create",
+        label: "Create Model",
+        description: "Create a new model",
+      },
+      {
+        name: "model:update",
+        label: "Update Model",
+        description: "Update model details",
+      },
+      {
+        name: "model:delete",
+        label: "Delete Model",
+        description: "Delete a model",
+      },
+      {
+        name: "settings:read",
+        label: "Read Setting",
+        description: "Read setting details",
+      },
+      {
+        name: "settings:create",
+        label: "Create Setting",
+        description: "Create a new setting",
+      },
+      {
+        name: "settings:update",
+        label: "Update Setting",
+        description: "Update setting details",
+      },
+      {
+        name: "settings:delete",
+        label: "Delete Setting",
+        description: "Delete a setting",
+      },
+      {
+        name: "project:read",
+        label: "Read Project",
+        description: "Read project details",
+      },
+      {
+        name: "project:create",
+        label: "Create Project",
+        description: "Create a new project",
+      },
+      {
+        name: "project:update",
+        label: "Update Project",
+        description: "Update project details",
+      },
+      {
+        name: "project:delete",
+        label: "Delete Project",
+        description: "Delete a project",
+      },
     ];
 
-    const permissionEntities = permissions.map((permission) => {
+    const permissionEntities = Permissions.map((permission) => {
       const permissionEntity = new Permission();
       permissionEntity.name = permission.name;
       permissionEntity.label = permission.label;
@@ -74,28 +195,78 @@ async function generatePermissions(dataSource: DataSource) {
     const roles = await Role.find();
 
     const adminRole = roles.find((role) => role.name === "Admin");
+    const userRole = roles.find((role) => role.name === "User");
     const managerRole = roles.find((role) => role.name === "Manager");
+    const supplierRole = roles.find((role) => role.name === "Supplier");
+    const employeeRole = roles.find((role) => role.name === "Employee");
+    const customerRole = roles.find((role) => role.name === "Customer");
 
-    if (!adminRole || !managerRole) {
+    if (
+      !adminRole ||
+      !managerRole ||
+      !userRole ||
+      !supplierRole ||
+      !employeeRole ||
+      !customerRole
+    ) {
       throw new Error("Roles for create permissions not found");
     }
 
     adminRole.permissions = permissionEntities.filter((permission) => {
       return (
+        permission.name.includes("application:") ||
         permission.name.includes("user:") ||
         permission.name.includes("role:") ||
-        permission.name.includes("category:")
+        permission.name.includes("category:") ||
+        permission.name.includes("model:") ||
+        permission.name.includes("settings:") ||
+        permission.name.includes("project:")
       );
     });
 
     managerRole.permissions = permissionEntities.filter((permission) => {
-      return permission.name.includes("category:");
+      return (
+        permission.name.includes("application:") ||
+        permission.name.includes("category:")
+      );
+    });
+
+    userRole.permissions = permissionEntities.filter((permission) => {
+      return (
+        permission.name.includes("application:") ||
+        permission.name.includes("category:")
+      );
+    });
+
+    supplierRole.permissions = permissionEntities.filter((permission) => {
+      return (
+        permission.name.includes("application:") ||
+        permission.name.includes("model:") ||
+        permission.name.includes("category:")
+      );
+    });
+
+    employeeRole.permissions = permissionEntities.filter((permission) => {
+      return (
+        permission.name.includes("application:") ||
+        permission.name.includes("model:") ||
+        permission.name.includes("category:") ||
+        permission.name.includes("project:")
+      );
+    });
+
+    customerRole.permissions = permissionEntities.filter((permission) => {
+      return permission.name.includes("application:");
     });
 
     await dataSource.manager.save(adminRole);
     await dataSource.manager.save(managerRole);
+    await dataSource.manager.save(userRole);
+    await dataSource.manager.save(supplierRole);
+    await dataSource.manager.save(employeeRole);
+    await dataSource.manager.save(customerRole);
 
-    console.log(`Successfully created ${permissions.length} permissions`);
+    console.log(`Successfully created ${Permissions.length} permissions`);
   } catch (error) {
     console.error("Error seeding permissions:", error);
   }

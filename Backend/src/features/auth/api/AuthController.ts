@@ -76,6 +76,7 @@ export default class AuthController {
             role: {
               name: req.user.role.name,
               label: req.user.role.label,
+              permissions: req.user.role.permissions,
             },
             avatar: req.user.avatar,
           },

@@ -1,4 +1,4 @@
-export enum PermissionEnum {
+export enum CredentialsEnum {
   "application:all" = "application:all",
   "user:read" = "user:read",
   "user:create" = "user:create",

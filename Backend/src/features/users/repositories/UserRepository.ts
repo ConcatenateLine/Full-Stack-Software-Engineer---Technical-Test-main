@@ -36,7 +36,9 @@ export default class UserRepository {
     return User.findOneOrFail({
       where: { email },
       relations: {
-        role: true,
+        role: {
+          permissions: true,
+        },
       },
       select: {
         password: true,
@@ -49,6 +51,7 @@ export default class UserRepository {
         role: {
           name: true,
           label: true,
+          permissions: true,
         },
       },
     });

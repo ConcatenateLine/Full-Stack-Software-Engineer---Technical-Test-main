@@ -1,15 +1,16 @@
 import {
-  // BookOpen,
-  // Bot,
-  // Frame,
+  BookOpen,
+  Bot,
+  Frame,
   LayoutDashboardIcon,
-  // LifeBuoy,
-  // Map,
-  // PieChart,
-  // Send,
-  // Settings2,
-  // SquareTerminal,
+  UsersIcon,
+  LifeBuoy,
+  Map,
+  PieChart,
+  Send,
+  Settings2,
 } from "lucide-react";
+import { CredentialsEnum } from "../enums/CredentialsEnum";
 
 export const data = {
   user: {
@@ -22,120 +23,138 @@ export const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboardIcon,
+      credentials: [CredentialsEnum["application:all"]],
     },
-    // {
-    //   title: "Playground",
-    //   url: "#",
-    //   icon: SquareTerminal,
-    //   isActive: true,
-    //   items: [
-    //     {
-    //       title: "History",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Starred",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Settings",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Models",
-    //   url: "#",
-    //   icon: Bot,
-    //   items: [
-    //     {
-    //       title: "Genesis",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Explorer",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Quantum",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
+    {
+      title: "Users",
+      url: "/dashboard/users",
+      icon: UsersIcon,
+      credentials: [CredentialsEnum["user:read"]],
+      items: [
+        {
+          title: "List Users",
+          url: "/dashboard/users",
+          credentials: [CredentialsEnum["user:read"]],
+        },
+        {
+          title: "Add User",
+          url: "/dashboard/user/add",
+          credentials: [CredentialsEnum["user:create"]],
+        },
+      ],
+    },
+    {
+      title: "Models",
+      url: "#",
+      icon: Bot,
+      credentials: [CredentialsEnum["model:read"]],
+      items: [
+        {
+          title: "Genesis",
+          url: "#",
+          credentials: [CredentialsEnum["model:read"]],
+        },
+        {
+          title: "Explorer",
+          url: "#",
+          credentials: [CredentialsEnum["model:read"]],
+        },
+        {
+          title: "Quantum",
+          url: "#",
+          credentials: [CredentialsEnum["model:read"]],
+        },
+      ],
+    },
+    {
+      title: "Documentation",
+      url: "#",
+      icon: BookOpen,
+      credentials: [CredentialsEnum["application:all"]],
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+          credentials: [CredentialsEnum["application:all"]],
+        },
+        {
+          title: "Get Started",
+          url: "#",
+          credentials: [CredentialsEnum["application:all"]],
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+          credentials: [CredentialsEnum["application:all"]],
+        },
+        {
+          title: "Changelog",
+          url: "#",
+          credentials: [CredentialsEnum["application:all"]],
+        },
+      ],
+    },
+    {
+      title: "Settings",
+      url: "#",
+      icon: Settings2,
+      credentials: [CredentialsEnum["settings:read"]],
+      items: [
+        {
+          title: "General",
+          url: "#",
+          credentials: [CredentialsEnum["settings:read"]],
+        },
+        {
+          title: "Team",
+          url: "#",
+          credentials: [CredentialsEnum["settings:read"]],
+        },
+        {
+          title: "Billing",
+          url: "#",
+          credentials: [CredentialsEnum["settings:read"]],
+        },
+        {
+          title: "Limits",
+          url: "#",
+          credentials: [CredentialsEnum["settings:read"]],
+        },
+      ],
+    },
   ],
   navSecondary: [
-    // {
-    //   title: "Support",
-    //   url: "#",
-    //   icon: LifeBuoy,
-    // },
-    // {
-    //   title: "Feedback",
-    //   url: "#",
-    //   icon: Send,
-    // },
+    {
+      title: "Support",
+      url: "#",
+      icon: LifeBuoy,
+      credentials: [CredentialsEnum["model:read"]],
+    },
+    {
+      title: "Feedback",
+      url: "#",
+      icon: Send,
+      credentials: [CredentialsEnum["model:read"]],
+    },
   ],
   projects: [
-    // {
-    //   name: "Design Engineering",
-    //   url: "#",
-    //   icon: Frame,
-    // },
-    // {
-    //   name: "Sales & Marketing",
-    //   url: "#",
-    //   icon: PieChart,
-    // },
-    // {
-    //   name: "Travel",
-    //   url: "#",
-    //   icon: Map,
-    // },
+    {
+      name: "Design Engineering",
+      url: "#",
+      icon: Frame,
+      credentials: [CredentialsEnum["project:read"]],
+    },
+    {
+      name: "Sales & Marketing",
+      url: "#",
+      icon: PieChart,
+      credentials: [CredentialsEnum["project:read"]],
+    },
+    {
+      name: "Travel",
+      url: "#",
+      icon: Map,
+      credentials: [CredentialsEnum["project:read"]],
+    },
   ],
 };

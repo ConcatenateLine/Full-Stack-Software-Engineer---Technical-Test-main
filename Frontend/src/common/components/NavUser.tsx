@@ -19,6 +19,7 @@ import { useNavigate } from "react-router";
 import { useLogoutMutation } from "@/features/auth/services/AuthService";
 import { useSelector } from "react-redux";
 import { RootState } from "@/features/store";
+import { MenuModeToggle } from "./MenuModeToggle";
 
 const NavUser = () => {
   const { isMobile } = useSidebar();
@@ -44,7 +45,7 @@ const NavUser = () => {
               size="lg"
               className="cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg bg-[var(--secondary)]">
+              <Avatar className="h-8 w-8 rounded-lg bg-secondary">
                 <AvatarImage
                   src={user.avatar}
                   alt={user.firstName + " avatar"}
@@ -68,7 +69,7 @@ const NavUser = () => {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg bg-[var(--secondary)]">
+                <Avatar className="h-8 w-8 rounded-lg bg-secondary">
                   <AvatarImage
                     src={user.avatar}
                     alt={user.firstName + " avatar"}
@@ -81,6 +82,11 @@ const NavUser = () => {
                   </span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <MenuModeToggle />
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

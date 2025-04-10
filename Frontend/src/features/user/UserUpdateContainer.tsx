@@ -129,7 +129,7 @@ const UserUpdateContainer = () => {
       }).unwrap();
 
       toast.success("User updated successfully");
-      navigate("/dashboard");
+      navigate("/dashboard/users");
     } catch (err: any) {
       console.log(err);
 
@@ -172,7 +172,7 @@ const UserUpdateContainer = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-2 gap-4">
-              <Avatar className="w-36 h-36 mx-auto bg-[var(--secondary)]">
+              <Avatar className="w-36 h-36 mx-auto bg-secondary">
                 <AvatarImage src={avatarUrl} alt="@Avatar" />
                 <AvatarFallback>@Avatar</AvatarFallback>
               </Avatar>
@@ -280,7 +280,6 @@ const UserUpdateContainer = () => {
                         <Input {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
-                      <FormDescription>(e.g., +52-0123456789)</FormDescription>
                     </FormItem>
                   )}
                 />
