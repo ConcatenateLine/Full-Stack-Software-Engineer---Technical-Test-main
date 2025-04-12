@@ -38,7 +38,7 @@ export const data = {
         },
         {
           title: "Add User",
-          url: "/dashboard/user/add",
+          url: "/dashboard/users/add",
           credentials: [CredentialsEnum["user:create"]],
         },
       ],

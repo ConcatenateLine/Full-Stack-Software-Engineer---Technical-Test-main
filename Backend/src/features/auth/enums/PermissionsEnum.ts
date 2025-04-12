@@ -1,4 +1,4 @@
-export enum PermissionEnum {
+enum PermissionEnum {
   "application:all" = "application:all",
   "user:read" = "user:read",
   "user:create" = "user:create",
@@ -27,3 +27,5 @@ export enum PermissionEnum {
   "project:update" = "project:update",
   "project:delete" = "project:delete",
 }
+
+export default PermissionEnum;

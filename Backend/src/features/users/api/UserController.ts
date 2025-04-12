@@ -7,6 +7,7 @@ import CustomError from "../../common/errors/CustomError";
 import UserUpdateDto from "../dtos/UserUpdateDto";
 import UserFilterDto from "../dtos/UserFiltersDto";
 import UserPaginationDto from "../dtos/UserPaginationDto";
+import type { CustomRequestTypeWithFile } from "../../common/types/CustomRequestType";
 
 export default class UserController {
   constructor(private readonly userService: UserService) {
@@ -15,10 +16,10 @@ export default class UserController {
     }
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: CustomRequestTypeWithFile, res: Response) {    
     try {
-      if (req.file?.path) {
-        req.body.avatar = req.file.filename;
+      if (req.uploadedFile?.path) {
+        req.body.avatar = req.uploadedFile.filename;
       }
 
       const userDto = plainToInstance(UserCreateDto, req.body);
@@ -40,10 +41,10 @@ export default class UserController {
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: CustomRequestTypeWithFile, res: Response) {
     try {
-      if (req.file?.path) {
-        req.body.avatar = req.file.filename;
+      if (req.uploadedFile?.path) {
+        req.body.avatar = req.uploadedFile.filename;
       }
 
       const updateDto = plainToInstance(UserUpdateDto, req.body);

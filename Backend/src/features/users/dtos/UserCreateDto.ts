@@ -36,7 +36,6 @@ export default class UserCreateDto {
   password!: string;
 
   @IsString()
-  @IsOptional()
   @Matches(/^$|^(\+?\d{1,4})-(\d{10})$/, {
     message: "Phone number must be empty or in the format: +1234-1234567890",
   })
@@ -79,7 +78,15 @@ export class AddressCreateDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^\d{5}$/, {
-    message: "Zip code must be 5 digits"
+    message: "Zip code must be 5 digits",
   })
   postalCode!: string;
+
+  @IsString()
+  @IsOptional()
+  lat!: string;
+
+  @IsString()
+  @IsOptional()
+  lng!: string;
 }

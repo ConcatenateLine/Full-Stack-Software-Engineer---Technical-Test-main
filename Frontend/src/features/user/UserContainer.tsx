@@ -28,7 +28,7 @@ const UserContainer = () => {
   const columns = UserColumns({
     edit: (row: Row<z.infer<typeof schema>>) => {
       dispatch(setSelectedUser(row.original as Partial<User>));
-      navigate(`/dashboard/user/${row.original.id}/edit`);
+      navigate(`/dashboard/users/${row.original.id}/edit`);
     },
     delete: (row) => handleDelete(row),
   });
@@ -41,7 +41,7 @@ const UserContainer = () => {
         query={useGetUsersPaginatedInfiniteQuery}
         columns={columns}
         operations={{
-          add: () => navigate("/dashboard/user/add"),
+          add: () => navigate("/dashboard/users/add"),
         }}
       />
     </div>

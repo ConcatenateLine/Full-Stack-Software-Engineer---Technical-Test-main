@@ -96,6 +96,7 @@ export const GenericPaginateTable = <T,>({
   const totalPages = currentPageData?.pagination.totalPages ?? 1;
   const waiting = isLoading || isFetching;
   const cleared = Object.keys(filters).length === 0;
+  const tableItems = pageSize - rows?.length;
 
   const table = useReactTable({
     data: rows,
@@ -313,46 +314,74 @@ export const GenericPaginateTable = <T,>({
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="overflow-hidden rounded-lg border">
-          {waiting ? (
-            <Skeleton className="h-96" />
-          ) : (
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-muted">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      );
-                    })}
+          <Table>
+            <TableHeader className="sticky top-0 z-10 bg-muted">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody className="**:data-[slot=table-cell]:first:w-8">
+              {waiting ? (
+                Array.from({ length: pageSize }).map((_, index) => (
+                  <TableRow key={`skeleton-${index}`}>
+                    {columns.map((_, colIndex) => (
+                      <TableCell key={`skeleton-cell-${colIndex}`}>
+                        <Skeleton className="h-6 w-full m-1" />
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                {table.getRowModel().rows?.length ? (
-                  table
-                    .getRowModel()
-                    .rows.map((row) => <DraggableRow key={row.id} row={row} />)
-                ) : (
+                ))
+              ) : table.getRowModel().rows?.length ? (
+                <>
+                  {table.getRowModel().rows.map((row) => (
+                    <DraggableRow key={row.id} row={row} />
+                  ))}
+                  {Array.from({ length: tableItems }).map((_, index) => (
+                    <TableRow key={`skeleton-${index}`}>
+                      {columns.map((_, colIndex) => (
+                        <TableCell key={`skeleton-cell-${colIndex}`}>
+                          <div className="h-6 w-full m-1" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </>
+              ) : (
+                <>
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center"
+                      className="h-[98px] text-center m-8"
                     >
                       No results.
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
+                  {Array.from({ length: pageSize - 2 }).map((_, index) => (
+                    <TableRow key={`skeleton-${index}`}>
+                      {columns.map((_, colIndex) => (
+                        <TableCell key={`skeleton-cell-${colIndex}`}>
+                          <div className="h-6 w-full m-1" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </>
+              )}
+            </TableBody>
+          </Table>
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="hidden flex-1 text-sm text-muted-foreground lg:flex"></div>

@@ -2,7 +2,7 @@ import { Router } from "express";
 import AuthController from "./AuthController";
 import AuthService from "../services/AuthService";
 import UserRepository from "../../users/repositories/UserRepository";
-import AuthMiddleware from "../middleware/AuthMiddleware";
+import AuthMiddleware from "../middlewares/AuthMiddleware";
 import TokenBlacklistRepository from "../repositories/TokenBlackListRepository";
 
 const router = Router();

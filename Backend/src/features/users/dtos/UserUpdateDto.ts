@@ -72,4 +72,12 @@ export class AddressUpdateDto {
     message: "Zip code must be 5 digits",
   })
   postalCode?: string;
+
+  @IsString()
+  @IsOptional()
+  lat?: string;
+
+  @IsString()
+  @IsOptional()
+  lng?: string;
 }

@@ -1,7 +1,7 @@
 import type { NextFunction, Response } from "express";
 import CustomError from "../../common/errors/CustomError";
 import type { CustomRequestType } from "../../common/types/CustomRequestType";
-import type { PermissionEnum } from "../enums/PermissionsEnum";
+import type PermissionEnum from "../enums/PermissionsEnum";
 
 export default class PermissionsMiddleware {
   static checkPermissions(requiredPermissions: PermissionEnum[]) {

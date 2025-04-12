@@ -118,7 +118,7 @@ const UserColumns = (operations: {
         row.original.address ? (
           <div className="text-right">
             {row.original.address.street}, {row.original.address.number},{" "}
-            {row.original.address.city}, {row.original.address.postalCode}
+            {row.original.address.postalCode} {row.original.address.city},
           </div>
         ) : (
           <div className="text-right">No Address</div>

@@ -19,8 +19,8 @@ function App() {
       <Route path="/dashboard" element={<PrivateLayout />}>
         <Route index element={<DashboardContainer />} />
         <Route path="users" element={<UserContainer />} />
-        <Route path="user/add" element={<UserAddContainer />} />
-        <Route path="user/:id/edit" element={<UserUpdateContainer />} />
+        <Route path="users/add" element={<UserAddContainer />} />
+        <Route path="users/:id/edit" element={<UserUpdateContainer />} />
       </Route>
     </Routes>
   );

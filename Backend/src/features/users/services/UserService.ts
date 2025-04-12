@@ -31,7 +31,9 @@ export default class UserService {
         userData.address.street,
         userData.address.number,
         userData.address.city,
-        userData.address.postalCode || ""
+        userData.address.postalCode || "",
+        userData.address.lat || "",
+        userData.address.lng || ""
       );
 
       const user = await this.userRepository.create({
@@ -72,7 +74,9 @@ export default class UserService {
           updateData.address.street || "",
           updateData.address.number || "",
           updateData.address.city || "",
-          updateData.address.postalCode || ""
+          updateData.address.postalCode || "",
+          updateData.address.lat || "",
+          updateData.address.lng || ""
         );
       }
 

@@ -11,10 +11,12 @@ import { useNavigate } from "react-router";
 
 const generateBreadcrumbs = (pathname: string) => {
   const segments = pathname.split("/").filter((segment) => segment);
-  return segments.map((segment, index) => ({
-    title: segment.replace(/-/g, " ").toUpperCase(),
-    url: `/${segments.slice(0, index + 1).join("/")}`,
-  }));
+  return segments
+    .filter((segment) => !/^\d+$/.test(segment))
+    .map((segment, index) => ({
+      title: segment.replace(/-/g, " ").toUpperCase(),
+      url: `/${segments.slice(0, index + 1).filter((s) => !/^\d+$/.test(s)).join("/")}`,
+    }));
 };
 
 const SiteHeader = () => {
@@ -33,7 +35,7 @@ const SiteHeader = () => {
           <BreadcrumbList>
             {breadcrumbItems.length > 1 &&
               breadcrumbItems.map((item, index) =>
-                index < breadcrumbItems.length - 2 ? (
+                index < breadcrumbItems.length - 1 ? (
                   <>
                     <BreadcrumbItem key={`${item.title}-${item.url}`}>
                       <BreadcrumbLink
