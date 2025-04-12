@@ -29,11 +29,14 @@ import { useState } from "react";
 import GoogleMap from "@/common/components/maps/GoogleMap";
 import UserSchema from "./schemes/UserScheme";
 import AddressSchema from "./schemes/AddressScheme";
+import { Switch } from "@/components/ui/switch";
+import AutocompleteAddress from "@/common/components/maps/AutocompleteAddress";
 
 const UserAddContainer = () => {
   const MAX_SIZE = 1 * 1024 * 1024; // 1MB
   const navigate = useNavigate();
   const [addUser] = useAddUserMutation();
+  const [activeAutocomplete, setActiveAutocomplete] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof UserSchema>>({
@@ -344,26 +347,46 @@ const UserAddContainer = () => {
           </div>
           <Separator />
           <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="address" className="mb-9">
-                Address
-              </Label>
-              <div className="flex flex-col gap-3">
-                <FormField
-                  control={form.control}
-                  name="address.street"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Street</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <div className="grid gap-4">
+              <div className="flex items-center justify-between mb-9">
+                <Label htmlFor="address" className="w-3/4">
+                  Address
+                </Label>
+                <div className="md:w-1/4">
+                  <Switch
+                    checked={activeAutocomplete}
+                    onCheckedChange={setActiveAutocomplete}
+                  />
+                  <label htmlFor="address" className="ml-2">
+                    Autocomplete
+                  </label>
+                </div>
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
+                {activeAutocomplete ? (
+                  <AutocompleteAddress
+                    onAddressSelect={fillAddress}
+                    address={form.watch("address")}
+                  />
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <FormField
+                      control={form.control}
+                      name="address.street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col gap-4">
                 <FormField
                   control={form.control}
                   name="address.city"
@@ -378,7 +401,7 @@ const UserAddContainer = () => {
                   )}
                 />
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
                 <FormField
                   control={form.control}
                   name="address.number"
@@ -393,7 +416,7 @@ const UserAddContainer = () => {
                   )}
                 />
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
                 <FormField
                   control={form.control}
                   name="address.postalCode"
@@ -410,7 +433,10 @@ const UserAddContainer = () => {
               </div>
             </div>
             <div className="rounded-md overflow-hidden min-h-60 relative">
-              <GoogleMap fillAddress={fillAddress} />
+              <GoogleMap
+                fillAddress={fillAddress}
+                address={form.watch("address")}
+              />
             </div>
           </div>
           <div className="flex gap-2">

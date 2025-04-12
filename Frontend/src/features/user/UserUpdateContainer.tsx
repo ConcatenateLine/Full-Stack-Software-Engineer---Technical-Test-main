@@ -34,6 +34,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import GoogleMap from "@/common/components/maps/GoogleMap";
 import AddressSchema from "./schemes/AddressScheme";
 import UserSchema from "./schemes/UserScheme";
+import { Switch } from "@/components/ui/switch";
+import AutocompleteAddress from "@/common/components/maps/AutocompleteAddress";
 
 const partialSchema = UserSchema.partial();
 
@@ -42,6 +44,7 @@ const UserUpdateContainer = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const user = useSelector((state: RootState) => state.user.selectedUser);
+  const [activeAutocomplete, setActiveAutocomplete] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
     user?.avatar as string | undefined
   );
@@ -377,25 +380,44 @@ const UserUpdateContainer = () => {
             </div>
             <Separator />
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="address" className="mb-9">
-                  Address
-                </Label>
-
+              <div className="grid gap-4">
+                <div className="flex items-center justify-between mb-9">
+                  <Label htmlFor="address" className="w-3/4">
+                    Address
+                  </Label>
+                  <div className="md:w-1/4">
+                    <Switch
+                      checked={activeAutocomplete}
+                      onCheckedChange={setActiveAutocomplete}
+                    />
+                    <label htmlFor="address" className="ml-2">
+                      Autocomplete
+                    </label>
+                  </div>
+                </div>
                 <div className="flex flex-col gap-3">
-                  <FormField
-                    control={form.control}
-                    name="address.street"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Street</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {activeAutocomplete ? (
+                    <AutocompleteAddress
+                      onAddressSelect={fillAddress}
+                      address={form.watch("address")}
+                    />
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <FormField
+                        control={form.control}
+                        name="address.street"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Street</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col gap-3">
                   <FormField
@@ -446,10 +468,7 @@ const UserUpdateContainer = () => {
               <div className="rounded-md overflow-hidden min-h-60 relative">
                 <GoogleMap
                   fillAddress={fillAddress}
-                  customCenter={{
-                    lat: Number(user?.address?.lat) || 0,
-                    lng: Number(user?.address?.lng) || 0,
-                  }}
+                  address={form.watch("address")}
                 />
               </div>
             </div>

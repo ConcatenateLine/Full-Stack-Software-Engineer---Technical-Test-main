@@ -2,32 +2,27 @@ import AddressSchema from "@/features/user/schemes/AddressScheme";
 import Debounce from "@/lib/Debounce";
 import { AdvancedMarker, APIProvider, Map } from "@vis.gl/react-google-maps";
 import { Loader } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 interface GoogleMapProps {
   fillAddress: (address: z.infer<typeof AddressSchema>) => void;
-  customCenter?: { lat: number; lng: number };
+  address?: z.infer<typeof AddressSchema>;
 }
 
-const GoogleMap = ({ fillAddress, customCenter }: GoogleMapProps) => {
+const GoogleMap = ({ fillAddress, address }: GoogleMapProps) => {
   const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const GEOAPIFY_API_KEY = import.meta.env.VITE_GEOAPIFY_API_KEY;
-  const position =
-    customCenter && customCenter.lat && customCenter.lng
-      ? customCenter
-      : {
-          lat: 17.061164631400896,
-          lng: -96.72569859941957,
-        };
+  const position = {
+    lat: 17.061164631400896,
+    lng: -96.72569859941957,
+  };
   const [center, setCenter] = useState<
     { lat: number; lng: number } | undefined
   >(undefined);
   const [zoom, setZoom] = useState<number | undefined>(undefined);
-  const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>(
-    customCenter ? [customCenter] : []
-  );
+  const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
 
   const [isLoading, setLoading] = useState(false);
 
@@ -90,9 +85,25 @@ const GoogleMap = ({ fillAddress, customCenter }: GoogleMapProps) => {
   const onclickMarker = (e: { lat: number; lng: number }) => {
     try {
       setCenter(e);
-      setZoom(17);
+      setZoom(18);
     } catch (error) {}
   };
+
+  useEffect(() => {
+    if (address && address.lat && address.lng) {
+      setCenter({
+        lat: Number(address.lat),
+        lng: Number(address.lng),
+      });
+      setMarkers([
+        {
+          lat: Number(address.lat),
+          lng: Number(address.lng),
+        },
+      ]);
+      setZoom(18);
+    }
+  }, [address]);
 
   return (
     <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>

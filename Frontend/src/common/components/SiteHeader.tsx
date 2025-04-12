@@ -37,7 +37,7 @@ const SiteHeader = () => {
               breadcrumbItems.map((item, index) =>
                 index < breadcrumbItems.length - 1 ? (
                   <>
-                    <BreadcrumbItem key={`${item.title}-${item.url}`}>
+                    <BreadcrumbItem key={`${item.title}-${index}`}>
                       <BreadcrumbLink
                         className="cursor-pointer"
                         onClick={() => navigate(item.url)}
