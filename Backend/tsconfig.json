@@ -5,17 +5,15 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
     "allowJs": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
 
-
     // Bundler mode
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    // "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
+    // "noEmit": true,
 
     // Best practices
     "strict": true,
@@ -29,6 +27,9 @@
 
     "rootDir": "./src" /* Specify the root folder within your source files. */,
     "outDir": "./dist" /* Specify the output folder within your source files. */
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

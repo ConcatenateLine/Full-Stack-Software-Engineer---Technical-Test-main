@@ -329,6 +329,8 @@ async function generateRandomUser(index: number): Promise<User> {
     number: "123",
     city: "City",
     postalCode: "12345",
+    lat: "",
+    lng: ""
   };
 
   return user;
@@ -362,10 +364,10 @@ async function generateUsers(dataSource: DataSource) {
       number: "123",
       city: "City",
       postalCode: "12345",
+      lat: "",
+      lng: ""
     };
-
     users.push(user);
-
     await dataSource.manager.save(users);
 
     console.log(`Successfully created ${users.length} users`);

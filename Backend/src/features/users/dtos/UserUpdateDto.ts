@@ -1,12 +1,35 @@
-import {
-  IsOptional,
-  IsString,
-  ValidateNested,
-  IsNumber,
-  Matches,
-} from "class-validator";
+import { IsOptional, IsString, ValidateNested, Matches } from "class-validator";
 import { plainToInstance, Transform, Type } from "class-transformer";
 import { AddressCreateDto } from "./UserCreateDto";
+
+export class AddressUpdateDto {
+  @IsString()
+  @IsOptional()
+  street?: string;
+
+  @IsString()
+  @IsOptional()
+  number?: string;
+
+  @IsString()
+  @IsOptional()
+  city?: string;
+
+  @IsString()
+  @IsOptional()
+  @Matches(/^\d{5}$/, {
+    message: "Zip code must be 5 digits",
+  })
+  postalCode?: string;
+
+  @IsString()
+  @IsOptional()
+  lat?: string;
+
+  @IsString()
+  @IsOptional()
+  lng?: string;
+}
 
 export default class UserUpdateDto {
   @IsString()
@@ -51,33 +74,4 @@ export default class UserUpdateDto {
   @IsString()
   @IsOptional()
   avatar?: string;
-}
-
-export class AddressUpdateDto {
-  @IsString()
-  @IsOptional()
-  street?: string;
-
-  @IsString()
-  @IsOptional()
-  number?: string;
-
-  @IsString()
-  @IsOptional()
-  city?: string;
-
-  @IsString()
-  @IsOptional()
-  @Matches(/^\d{5}$/, {
-    message: "Zip code must be 5 digits",
-  })
-  postalCode?: string;
-
-  @IsString()
-  @IsOptional()
-  lat?: string;
-
-  @IsString()
-  @IsOptional()
-  lng?: string;
 }

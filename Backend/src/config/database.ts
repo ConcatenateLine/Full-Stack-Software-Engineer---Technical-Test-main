@@ -18,8 +18,11 @@ const AppDataSource = new DataSource({
   entities: [TokenBlacklist, Role, Permission, User, UserWithAvatar],
   // synchronize: true,
   // dropSchema: true,
-  // logging: true,
-  migrations: ["src/config/migrations/*.ts"],
+  logging: process.env.NODE_ENV === "development",
+  migrations:
+    process.env.NODE_ENV === "development"
+      ? ["src/config/migrations/*.ts"]
+      : ["src/config/migrations/*.js"],
   migrationsTableName: "migrations",
 });
 

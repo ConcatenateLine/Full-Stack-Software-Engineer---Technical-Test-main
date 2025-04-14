@@ -1,18 +1,41 @@
-import {
-  plainToInstance,
-  Transform,
-  TransformPlainToInstance,
-  Type,
-} from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   Matches,
   ValidateNested,
 } from "class-validator";
+
+export class AddressCreateDto {
+  @IsString()
+  @IsNotEmpty()
+  street!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  number!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  city!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^\d{5}$/, {
+    message: "Zip code must be 5 digits",
+  })
+  postalCode!: string;
+
+  @IsString()
+  @IsOptional()
+  lat!: string;
+
+  @IsString()
+  @IsOptional()
+  lng!: string;
+}
 
 export default class UserCreateDto {
   @IsString()
@@ -60,33 +83,4 @@ export default class UserCreateDto {
     message: "Avatar is a necessary field",
   })
   avatar!: string;
-}
-
-export class AddressCreateDto {
-  @IsString()
-  @IsNotEmpty()
-  street!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  number!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  city!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @Matches(/^\d{5}$/, {
-    message: "Zip code must be 5 digits",
-  })
-  postalCode!: string;
-
-  @IsString()
-  @IsOptional()
-  lat!: string;
-
-  @IsString()
-  @IsOptional()
-  lng!: string;
 }

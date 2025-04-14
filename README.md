@@ -212,6 +212,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
 **Note**: User credentials for login are:
 
 ```javascript
+// Data generated, only for demo purposes
 user.email = "GonzaloVinegas@gmail.com";
 user.role = "Admin";
 user.password = "password123";

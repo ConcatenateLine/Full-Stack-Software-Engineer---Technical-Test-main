@@ -1,0 +1,28 @@
+# Build stage
+FROM node:20-alpine as builder
+WORKDIR /app
+# Create uploads directory with proper permissions
+RUN mkdir -p /app/uploads && \
+    chmod 777 /app/uploads
+
+# Create assets directory with proper permissions
+RUN mkdir -p /app/assets && \
+    chmod 777 /app/assets
+
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/uploads ./uploads
+COPY --from=builder /app/assets ./assets
+
+EXPOSE 8080
+CMD ["sh","-c","chmod 777 /app/uploads && chmod 777 /app/assets && node run dist/index.js"]

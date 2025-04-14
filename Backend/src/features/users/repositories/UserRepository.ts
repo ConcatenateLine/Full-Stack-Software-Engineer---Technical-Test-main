@@ -6,7 +6,7 @@ import UserWithAvatar from "../entities/UserWithAvatar";
 import AppDataSource from "../../../config/database";
 
 export default class UserRepository {
-  domain = process.env.Domain || "";
+  domain = process.env.DOMAIN || "";
 
   async create(userData: Partial<User>): Promise<User> {
     const existingUser = await User.findOne({
