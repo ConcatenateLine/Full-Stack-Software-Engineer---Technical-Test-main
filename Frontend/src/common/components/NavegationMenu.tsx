@@ -105,11 +105,11 @@ const NavegationMenu = ({ MenuItems, MenuListItem }: NavegationMenuProps) => {
           </NavigationMenuItem>
         )}
         <NavigationMenuItem>
-          <Link to="/login">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Log in
-            </NavigationMenuLink>
-          </Link>
+          <NavigationMenuLink
+            asChild
+            className={navigationMenuTriggerStyle()}
+            children={<Link to="/login">Log in</Link>}
+          ></NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

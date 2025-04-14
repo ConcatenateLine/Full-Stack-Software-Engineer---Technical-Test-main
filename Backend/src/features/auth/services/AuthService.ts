@@ -4,6 +4,8 @@ import type UserRepository from "../../users/repositories/UserRepository";
 import JwtService from "./JwtService";
 import type LoginDto from "../dtos/LoginDto";
 import type TokenBlacklistRepository from "../repositories/TokenBlackListRepository";
+import type User from "../../users/entities/User";
+import type Permission from "../entities/Permission";
 
 export default class AuthService {
   constructor(
@@ -30,9 +32,13 @@ export default class AuthService {
         throw new CustomError("User is not active");
       }
 
+      const rolePermissionNames = user.role.permissions.map(
+        (rolePermission: Permission) => rolePermission.name
+      );
+
       const payload = {
         userId: user.id,
-        // role: user.role,
+        role: user.role.name,
         email: user.email,
       };
 
@@ -44,9 +50,13 @@ export default class AuthService {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          //   role: user.role,
-          status: user.status,
-          //   profilePicture: user.profilePicture,
+          role: {
+            name: user.role.name,
+            label: user.role.label,
+            permissions: rolePermissionNames,
+          },
+          avatar: user.avatarUrl,
+          // status: user.status,
         },
         token,
       };
@@ -55,7 +65,7 @@ export default class AuthService {
         throw new CustomError("Database error");
       }
       if (error instanceof EntityNotFoundError) {
-        throw new CustomError("User not found");
+        throw new CustomError("This user does not exist");
       }
 
       throw error;
@@ -77,7 +87,7 @@ export default class AuthService {
     }
   }
 
-  async validateToken(token: string): Promise<boolean> {
+  async validateToken(token: string): Promise<Partial<User>> {
     try {
       const isBlacklisted = await this.tokenBlacklistRepository.exists(token);
       if (isBlacklisted) {
@@ -85,7 +95,22 @@ export default class AuthService {
       }
 
       const decoded = JwtService.verify(token);
-      return true;
+
+      const user = await this.userRepository.findById(decoded.userId);
+
+      if (!user || user.status !== "Active") {
+        throw new CustomError("User not found");
+      }
+
+      return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatarUrl || undefined,
+        // status: user.status,
+      };
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

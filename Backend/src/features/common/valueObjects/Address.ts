@@ -3,6 +3,8 @@ export class Address {
     public street: string,
     public number: string,
     public city: string,
-    public postalCode: number
+    public postalCode: string,
+    public lat: string,
+    public lng: string
   ) {}
 }

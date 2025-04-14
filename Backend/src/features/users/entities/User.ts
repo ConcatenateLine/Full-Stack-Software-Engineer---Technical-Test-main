@@ -1,14 +1,17 @@
 import {
   Column,
-  Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
   Unique,
+  Entity,
+  ManyToOne,
 } from "typeorm";
 import type { Address } from "../../common/valueObjects/Address";
 import PasswordHasher from "../../common/utils/PasswordHasher";
+import { Expose } from "class-transformer";
+import Role from "../../auth/entities/Role";
 
 @Entity()
 @Unique(["email"])
@@ -45,11 +48,11 @@ export default class User extends BaseEntity {
   @Column({ type: "json", nullable: true })
   address!: Address;
 
-  @Column("varchar", { default: "User" })
-  role!: string;
+  @Column("varchar", { nullable: true })
+  avatar?: string;
 
-  // @Column({ nullable: true })
-  // profilePicture: string;
+  @ManyToOne(() => Role, (role) => role.users)
+  role!: Role;
 
   async setPassword(password: string): Promise<void> {
     this.password = await PasswordHasher.hash(password);
@@ -57,5 +60,14 @@ export default class User extends BaseEntity {
 
   async validatePassword(password: string): Promise<boolean> {
     return PasswordHasher.compare(password, this.password);
+  }
+
+  @Expose()
+  get avatarUrl(): string | null {
+    const domain = process.env.DOMAIN || "/api";
+
+    return this.avatar
+      ? `${domain}/uploads/${this.avatar}`
+      : `${domain}/assets/placeholders/avatarPlaceHolder.webp`;
   }
 }

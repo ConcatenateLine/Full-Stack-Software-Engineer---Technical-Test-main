@@ -7,6 +7,7 @@ import CustomError from "../../common/errors/CustomError";
 import UserUpdateDto from "../dtos/UserUpdateDto";
 import UserFilterDto from "../dtos/UserFiltersDto";
 import UserPaginationDto from "../dtos/UserPaginationDto";
+import type { CustomRequestTypeWithFile } from "../../common/types/CustomRequestType";
 
 export default class UserController {
   constructor(private readonly userService: UserService) {
@@ -15,15 +16,19 @@ export default class UserController {
     }
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: CustomRequestTypeWithFile, res: Response) {    
     try {
+      if (req.uploadedFile?.path) {
+        req.body.avatar = req.uploadedFile.filename;
+      }
+
       const userDto = plainToInstance(UserCreateDto, req.body);
       await validateOrReject(userDto, {
         validationError: { target: false, value: false },
       });
 
       const user = await this.userService.create(userDto);
-      const { password, ...userWithoutPassword } = user;
+      const { password, createdAt, updatedAt, ...userWithoutPassword } = user;
       res.status(201).json(userWithoutPassword);
     } catch (error) {
       if (error instanceof Array) {
@@ -36,8 +41,12 @@ export default class UserController {
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: CustomRequestTypeWithFile, res: Response) {
     try {
+      if (req.uploadedFile?.path) {
+        req.body.avatar = req.uploadedFile.filename;
+      }
+
       const updateDto = plainToInstance(UserUpdateDto, req.body);
       await validateOrReject(updateDto, {
         validationError: { target: false, value: false },
@@ -49,7 +58,8 @@ export default class UserController {
       }
 
       const updatedUser = await this.userService.update(userId, updateDto);
-      const { password, ...userWithoutPassword } = updatedUser;
+      const { password, createdAt, updatedAt, ...userWithoutPassword } =
+        updatedUser;
       res.status(200).json(userWithoutPassword);
     } catch (error) {
       if (error instanceof Array) {

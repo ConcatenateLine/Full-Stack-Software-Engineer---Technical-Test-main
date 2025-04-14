@@ -1,4 +1,4 @@
-import * as React from "react";
+import { ComponentPropsWithoutRef } from "react";
 import { type LucideIcon } from "lucide-react";
 
 import {
@@ -8,17 +8,24 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Link } from "react-router";
+import { CredentialsEnum } from "../enums/CredentialsEnum";
+
+export interface NavSecondaryItemProps {
+  title: string;
+  url: string;
+  icon: LucideIcon;
+  credentials?: CredentialsEnum[];
+}
+
+export interface NavSecondaryProps {
+  items: NavSecondaryItemProps[];
+}
 
 const NavSecondary = ({
   items,
   ...props
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) => {
+}: NavSecondaryProps & ComponentPropsWithoutRef<typeof SidebarGroup>) => {
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -26,10 +33,10 @@ const NavSecondary = ({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
+                <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

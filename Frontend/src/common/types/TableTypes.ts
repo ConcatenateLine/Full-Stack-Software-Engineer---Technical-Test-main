@@ -6,8 +6,6 @@ export type Pagination = {
   hasMore: boolean;
 };
 
-export type Filters = {
-  search?: string;
-  role?: string;
-  status?: string;
+export type Filters<T> = {
+  [key: string]: T;
 };

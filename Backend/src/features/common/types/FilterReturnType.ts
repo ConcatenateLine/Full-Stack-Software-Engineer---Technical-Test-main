@@ -1,1 +1,1 @@
-export type FilterReturnType<T> = { items: T[]; count: number; total: number };
+export type FilterReturnType<T> = { items: T[]; total: number };

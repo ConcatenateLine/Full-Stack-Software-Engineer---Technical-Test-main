@@ -5,6 +5,7 @@
 Feature-Based Architecture for a User Management API.
 
 ```
+uploads/                      # File upload directory : multer
 src/
 ├── features/                    # Feature modules
 │   ├── auth/                   # Authentication feature
@@ -64,6 +65,9 @@ bun install
 ```
 
 Configure database connection in `.env` file.
+
+## Multer
+Create `uploads` directory in the root of the project.
 
 To run:
 

@@ -1,0 +1,69 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  postgres:
+    build:
+      context: ./Database
+      dockerfile: dockerfile
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - Database/.env.production
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Backend/uploads:/app/uploads
+      - ./Backend/assets:/app/assets
+    environment:
+      - NODE_ENV=production
+      - POSTGRES_HOST=${DB_HOST:-localhost}
+      - POSTGRES_PORT=${DB_PORT:-5432}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_NAME:-myapp_db}
+    env_file:
+      - Backend/.env.production
+    command: npm run start
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://backend:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: dockerfile
+    ports:
+      - "5151:80"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - Frontend/.env.production
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    
+volumes:
+  postgres_data:

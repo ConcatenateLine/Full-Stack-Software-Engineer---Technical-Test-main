@@ -5,11 +5,15 @@ import { EntityNotFoundError, QueryFailedError } from "typeorm";
 import CustomError from "../../common/errors/CustomError";
 import type UserUpdateDto from "../dtos/UserUpdateDto";
 import type UserFilterDto from "../dtos/UserFiltersDto";
-import type User from "../entities/User";
 import type UserPaginationDto from "../dtos/UserPaginationDto";
+import type UserWithAvatar from "../entities/UserWithAvatar";
+import type RoleRepository from "../../auth/repositories/RoleRepository";
 
 export default class UserService {
-  constructor(private readonly userRepository: UserRepository) {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly roleRepository: RoleRepository
+  ) {
     if (!this.userRepository) {
       throw new Error("UserRepository is required");
     }
@@ -17,15 +21,24 @@ export default class UserService {
 
   async create(userData: UserCreateDto) {
     try {
+      const role = await this.roleRepository.findByName(userData.role);
+
+      if (!role) {
+        throw new CustomError("Role not found");
+      }
+
       const address = new Address(
         userData.address.street,
         userData.address.number,
         userData.address.city,
-        userData.address.postalCode
+        userData.address.postalCode || "",
+        userData.address.lat || "",
+        userData.address.lng || ""
       );
 
       const user = await this.userRepository.create({
         ...userData,
+        role: role,
         address: address,
       });
 
@@ -61,13 +74,28 @@ export default class UserService {
           updateData.address.street || "",
           updateData.address.number || "",
           updateData.address.city || "",
-          updateData.address.postalCode || 0
+          updateData.address.postalCode || "",
+          updateData.address.lat || "",
+          updateData.address.lng || ""
         );
       }
 
-      // if (updateData.role !== undefined) {
-      //   user.role = updateData.role;
-      // }
+      if (updateData.role !== undefined) {
+        const role = await this.roleRepository.findByName(updateData.role);
+
+        if (!role) {
+          throw new CustomError("Role not found");
+        }
+        user.role = role;
+      }
+
+      if (updateData.status !== undefined) {
+        user.status = updateData.status;
+      }
+
+      if (updateData.avatar !== undefined) {
+        user.avatar = updateData.avatar;
+      }
 
       return user.save();
     } catch (error) {
@@ -117,12 +145,12 @@ export default class UserService {
   async findAll(
     filter: UserFilterDto,
     pagination: UserPaginationDto
-  ): Promise<{ data: User[]; pagination: UserPaginationDto }> {
+  ): Promise<{ data: UserWithAvatar[]; pagination: UserPaginationDto }> {
     try {
       const { role, status, search } = filter;
       const { page, limit } = pagination;
 
-      const { items, count, total } = await this.userRepository.findAll({
+      const { items, total } = await this.userRepository.findAll({
         role,
         status,
         search,

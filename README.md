@@ -48,7 +48,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
      - [x] `role` (Admin/User)
      - [x] `status` (Active/Inactive)
      - [x] `address` (object with fields: street, number, city, postalCode)
-     - [] `profilePicture` (URL)
+     - [x] `profilePicture` (URL)
    - [x] Seed the database with 50 sample users.
 
 ---
@@ -59,7 +59,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
 
    - [x] A form where users can log in using their email and password.
    - [x] On successful login, store the JWT in local storage or cookies and redirect the user to the dashboard.
-   - Show an error message for invalid credentials.
+   - [x] Show an error message for invalid credentials.
 
 2. **Dashboard**
 
@@ -78,7 +78,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
        - [x] **Pagination**: Buttons for navigating between pages.
      - [x] Show a loading spinner while data is being fetched.
 
-    ``` Use Skeleton ```
+   `Use Skeleton`
 
 3. **Add User Form**
 
@@ -95,15 +95,23 @@ You are tasked with creating a **full-stack application** for managing users. Th
        - [x] Number
        - [x] City
        - [x] Postal Code
-       - Google Maps Integration:
-         - Include a Google Maps component where users can either type their address (autocomplete) or select a location on the map.
-         - When a location is selected, the form fields for the address should be automatically populated.
-     - **Profile Picture**:
-       - Allow the user to upload an image file (e.g., `.jpg`, `.png`).
-       - Use a library like **Multer** on the backend to upload the image and save its URL in the database.
-   - [x] 1/2 Validate the form and show appropriate error messages.
+       - [x] Google Maps Integration:
+         - [x] Include a Google Maps component where users can either type their address (autocomplete) or select a location on the map.
+         - [x] When a location is selected, the form fields for the address should be automatically populated.
 
-   `Fail some validations on update`
+        ```javascript
+          Aggregate the autocomplete component to automatically populate the address fields on select option of the search. *(Autocomplete Address)*
+          Aggregate the map component to automatically populate the address fields on select location. *(Reverse Geocoding)*
+        ```
+
+     - [x] **Profile Picture**:
+       - [x] Allow the user to upload an image file (e.g., `.jpg`, `.png`).
+       - [x] Use a library like **Multer** on the backend to upload the image and save its URL in the database.
+  
+      ```javascript
+       Use **Sharp** to process the image and convert it to WebP format.
+       ```
+   - [x] Validate the form and show appropriate error messages.
 
 4. **Edit User**
 
@@ -118,16 +126,49 @@ You are tasked with creating a **full-stack application** for managing users. Th
 
 ### Bonus Features (Optional)
 
-- Implement a **Role-Based Access Control**:
-  - Allow only Admin users to access the dashboard and perform user management.
-- Use **TypeScript** for both the frontend and backend.
+- [x] Implement a **Role-Based Access Control**:
+
+  - [x] Allow only Admin users to access the dashboard and perform user management.
+
+  ```javascript
+
+  On the backend and frontend, implement role-based access control (RBAC) to ensure that only the roles permitted can access the sections marked with the role permissions.
+
+  THE ROLES SEED ARE:
+  - User
+  - Admin
+  - Manager
+  - Supplier
+  - Employee
+  - Customer
+
+  AND THE PERMISSIONS ARE:
+  - application:all      - user:read
+  - user:create          - user:update
+  - user:delete          - role:read
+  - role:create          - role:update
+  - role:delete          - role:assign
+  - role:assign          - role:unassign
+  - category:read        - category:create
+  - category:update      - category:delete
+  - model:read           - model:create
+  - model:update         - model:delete
+  - settings:read        - settings:create
+  - settings:update      - settings:delete
+  - project:read         - project:create
+  - project:update       - project:delete
+
+  The permissions are assigned to the roles Without criteria, only for demo purposes.
+  ```
+
+- [x] Use **TypeScript** for both the frontend and backend.
 - [x] Style the frontend using **Material-UI**, **TailwindCSS**, or another modern UI library.
 
   `Use Shadcn for Frontend`
 
 - Include **Unit Tests** and **Integration Tests** for key features.
 - [x] Add **pagination controls** to show the total number of users and the current page.
-- Use **Docker** to containerize the app (both frontend and backend).
+- [x] Use **Docker** to containerize the app (both frontend and backend).
 - [x] Implement a **global state management solution** (e.g., Redux, Recoil, Zustand).
 
   `Use Redux`
@@ -171,18 +212,10 @@ You are tasked with creating a **full-stack application** for managing users. Th
 **Note**: User credentials for login are:
 
 ```javascript
-const user = new User();
-user.firstName = "Gonzalo";
-user.lastName = "Vinegas";
+// Data generated, only for demo purposes
 user.email = "GonzaloVinegas@gmail.com";
-user.phoneNumber = "+1234567890";
-user.status = "Active";
 user.role = "Admin";
-user.password = await bcrypt.hash("password123", 10);
-user.address = {
-  street: "123 Main St",
-  number: "123",
-  city: "City",
-  postalCode: 12345,
-};
+user.password = "password123";
+//master password: password123
+//for all other users
 ```

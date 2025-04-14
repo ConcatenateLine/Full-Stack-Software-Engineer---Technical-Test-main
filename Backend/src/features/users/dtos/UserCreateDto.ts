@@ -1,13 +1,41 @@
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
-  MinLength,
+  Matches,
   ValidateNested,
 } from "class-validator";
+
+export class AddressCreateDto {
+  @IsString()
+  @IsNotEmpty()
+  street!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  number!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  city!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^\d{5}$/, {
+    message: "Zip code must be 5 digits",
+  })
+  postalCode!: string;
+
+  @IsString()
+  @IsOptional()
+  lat!: string;
+
+  @IsString()
+  @IsOptional()
+  lng!: string;
+}
 
 export default class UserCreateDto {
   @IsString()
@@ -24,40 +52,35 @@ export default class UserCreateDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(8)
+  @Matches(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&#~^]{8,}$/, {
+    message:
+      "Password must be at least 8 characters long, including one uppercase letter, one digit, and no special characters except @$!%*?&#~^.",
+  })
   password!: string;
 
   @IsString()
-  @IsOptional()
+  @Matches(/^$|^(\+?\d{1,4})-(\d{10})$/, {
+    message: "Phone number must be empty or in the format: +1234-1234567890",
+  })
   phoneNumber?: string;
 
   @IsString()
   @IsNotEmpty()
   role!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  status!: string;
+
   @ValidateNested()
+  @Transform(({ value }) =>
+    plainToInstance(AddressCreateDto, JSON.parse(value))
+  )
   @Type(() => AddressCreateDto)
   address!: AddressCreateDto;
 
-  @IsString()
-  @IsNotEmpty()
-  profilePicture!: string;
-}
-
-export class AddressCreateDto {
-  @IsString()
-  @IsNotEmpty()
-  street!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  number!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  city!: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  postalCode!: number;
+  @IsString({
+    message: "Avatar is a necessary field",
+  })
+  avatar!: string;
 }

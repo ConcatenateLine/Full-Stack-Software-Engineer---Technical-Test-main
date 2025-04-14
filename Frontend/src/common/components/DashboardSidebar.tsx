@@ -9,15 +9,38 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import NavMain from "./NavMain";
-import NavProjects from "./NavProjects";
-import NavSecondary from "./NavSecondary";
+import NavMain, { NavMainItemProps } from "./NavMain";
+import NavProjects, { NavProjectsItemProps } from "./NavProjects";
+import NavSecondary, { NavSecondaryItemProps } from "./NavSecondary";
 import NavUser from "./NavUser";
-import { data } from "../constants/SidebarItems";
+import { data as sidebarData } from "../constants/SidebarItems";
+import { ComponentProps } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/features/store";
+import {
+  FilterByCredentials,
+  MenuItemWithCredentials,
+} from "../utils/FilterByCredentials";
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const data = {
+    navMain: FilterByCredentials(
+      sidebarData.navMain as MenuItemWithCredentials[],
+      user?.role?.permissions
+    ),
+    navSecondary: FilterByCredentials(
+      sidebarData.navSecondary as MenuItemWithCredentials[],
+      user?.role?.permissions
+    ),
+    projects: FilterByCredentials(
+      sidebarData.projects as MenuItemWithCredentials[],
+      user?.role?.permissions
+    ),
+  };
+
   return (
-    <Sidebar variant="inset">
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -28,7 +51,7 @@ const DashboardSidebar = () => {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate text-xs">{user?.role?.label}</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -36,9 +59,12 @@ const DashboardSidebar = () => {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={data.navMain as NavMainItemProps[]} />
+        <NavProjects projects={data.projects as NavProjectsItemProps[]} />
+        <NavSecondary
+          items={data.navSecondary as NavSecondaryItemProps[]}
+          className="mt-auto"
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

@@ -4,7 +4,7 @@ import { setAuth, clearAuth, Credentials } from "../slices/AuthSlice";
 export const AuthApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8181/api",
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token;
       if (token) {

@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "../user/slices/UserSlices";
 import authReducer from "../auth/slices/AuthSlice";
+import tableReducer from "../store/slices/TableSlice";
 import authCheckMiddleware from "../auth/services/AuthCheckService";
 import { AuthApi } from "../auth/services/AuthService";
 import { UserApi } from "../user/services/UserService";
@@ -8,6 +9,7 @@ import { UserApi } from "../user/services/UserService";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    tableState: tableReducer,
     user: userReducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
     [UserApi.reducerPath]: UserApi.reducer,

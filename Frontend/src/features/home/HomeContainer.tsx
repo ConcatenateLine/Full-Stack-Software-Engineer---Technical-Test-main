@@ -1,8 +1,8 @@
 const HomeContainer = () => {
   return (
     <>
-      <div className="container relative h-[800px] flex-col items-center justify-center lg:grid lg:max-w-none lg:grid-cols-2 lg:px-0 mt-9 rounded-lg overflow-hidden">
-        <div className="relative hidden h-full flex-col bg-muted p-1 dark:border-r lg:flex p-9">
+      <div className="container relative h-[800px] flex-col items-center justify-center lg:grid lg:max-w-7xl mx-auto lg:grid-cols-2 lg:px-0 mt-9 rounded-lg overflow-hidden">
+        <div className="relative hidden h-full flex-col bg-muted dark:border-r lg:flex p-9">
           <div className="absolute inset-0" />
           <div className="relative z-20 flex items-center text-lg font-medium">
             <svg

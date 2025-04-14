@@ -2,8 +2,12 @@ import User from "../entities/User";
 import CustomError from "../../common/errors/CustomError";
 import type { UserFilterType } from "../entities/UserFilterType";
 import type { FilterReturnType } from "../../common/types/FilterReturnType";
+import UserWithAvatar from "../entities/UserWithAvatar";
+import AppDataSource from "../../../config/database";
 
 export default class UserRepository {
+  domain = process.env.DOMAIN || "";
+
   async create(userData: Partial<User>): Promise<User> {
     const existingUser = await User.findOne({
       where: { email: userData.email },
@@ -20,6 +24,8 @@ export default class UserRepository {
     user.phoneNumber = userData.phoneNumber ?? "";
     user.address = userData.address!;
     user.status = userData.status ?? "Active";
+    user.role = userData.role!;
+    user.avatar = userData.avatar ?? "";
 
     await user.setPassword(userData.password!);
 
@@ -29,13 +35,36 @@ export default class UserRepository {
   async findByEmail(email: string): Promise<User> {
     return User.findOneOrFail({
       where: { email },
-      select: ["password", "id", "firstName", "lastName", "email", "status"],
+      relations: {
+        role: {
+          permissions: true,
+        },
+      },
+      select: {
+        password: true,
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        status: true,
+        avatar: true,
+        role: {
+          name: true,
+          label: true,
+          permissions: true,
+        },
+      },
     });
   }
 
   async findById(id: number): Promise<User> {
     return User.findOneOrFail({
       where: { id },
+      relations: {
+        role: {
+          permissions: true,
+        },
+      },
     });
   }
 
@@ -45,31 +74,17 @@ export default class UserRepository {
     search,
     page,
     limit,
-  }: UserFilterType): Promise<FilterReturnType<User>> {
-    const queryBuilder = User.createQueryBuilder("user");
+  }: UserFilterType): Promise<FilterReturnType<UserWithAvatar>> {
+    const items = await AppDataSource.query(
+      `SELECT * FROM get_users_with_avatar($1, $2, $3, $4, $5, $6)`,
+      [this.domain, (page - 1) * limit, limit, status, role, search]
+    );
 
-    if (role) {
-      queryBuilder.andWhere("user.role = :role", { role });
-    }
-    if (status) {
-      queryBuilder.andWhere("user.status = :status", { status });
-    }
-    if (search) {
-      queryBuilder.andWhere(
-        "user.firstName ILIKE :name OR user.lastName ILIKE :name OR user.email ILIKE :name",
-        {
-          name: `%${search}%`,
-        }
-      );
-    }
+    const summary = await AppDataSource.query(
+      `SELECT * FROM get_users_with_avatar_summary($1, $2, $3, $4, $5, $6)`,
+      [this.domain, (page - 1) * limit, limit, status, role, search]
+    );
 
-    const total = await queryBuilder.getCount();
-
-    const [items, count] = await queryBuilder
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return { items, count, total };
+    return { items, total: Number(summary[0].get_users_with_avatar_summary) };
   }
 }
