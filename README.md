@@ -168,7 +168,7 @@ You are tasked with creating a **full-stack application** for managing users. Th
 
 - Include **Unit Tests** and **Integration Tests** for key features.
 - [x] Add **pagination controls** to show the total number of users and the current page.
-- Use **Docker** to containerize the app (both frontend and backend).
+- [x] Use **Docker** to containerize the app (both frontend and backend).
 - [x] Implement a **global state management solution** (e.g., Redux, Recoil, Zustand).
 
   `Use Redux`
