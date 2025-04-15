@@ -1,0 +1,37 @@
+services:
+  # Database
+  - type: pserv
+    name: postgres
+    plan: free
+    env: docker
+    disk:
+      name: postgres_data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
+
+  # Backend Service
+  - type: web
+    name: backend
+    env: node
+    buildCommand: cd Backend && npm install
+    startCommand: cd Backend && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: POSTGRES_HOST
+        fromService:
+          type: pserv
+          name: postgres
+          property: host
+      - key: POSTGRES_PORT
+        value: 5432
+
+  # Frontend Service
+  - type: web
+    name: frontend
+    env: static
+    buildCommand: cd Frontend && npm install && npm run build
+    staticPublishPath: ./Frontend/build
+    envVars:
+      - key: NODE_ENV
+        value: production
