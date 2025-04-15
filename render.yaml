@@ -4,6 +4,7 @@ services:
     name: postgres
     plan: free
     env: docker
+    dockerfilePath: ./Database/dockerfile
     disk:
       name: postgres_data
       mountPath: /var/lib/postgresql/data
@@ -12,7 +13,8 @@ services:
   # Backend Service
   - type: web
     name: backend
-    env: node
+    env: docker
+    dockerfilePath: ./Backend/dockerfile
     buildCommand: cd Backend && npm install
     startCommand: cd Backend && npm run start
     envVars:
@@ -29,7 +31,8 @@ services:
   # Frontend Service
   - type: web
     name: frontend
-    env: static
+    env: docker
+    dockerfilePath: ./Frontend/dockerfile
     buildCommand: cd Frontend && npm install && npm run build
     staticPublishPath: ./Frontend/build
     envVars:
