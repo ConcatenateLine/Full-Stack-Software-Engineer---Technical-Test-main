@@ -4,6 +4,8 @@ FROM postgres:15 as postgres
 ENV POSTGRES_USER=${DB_USER:-postgres}
 ENV POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
 ENV POSTGRES_DB=${DB_NAME:-myapp_db}
+# Expose the PostgreSQL port
+EXPOSE 5432
 
 # Build stage backend
 FROM node:20-alpine as builder
@@ -32,10 +34,10 @@ COPY --from=builder /app/backend/uploads ./uploads
 COPY --from=builder /app/backend/assets ./assets
 
 EXPOSE 8080
-CMD ["sh","-c","chmod 777 /app/uploads && chmod 777 /app/assets && node run dist/index.js"]
+CMD ["sh","-c","chmod 777 /app/backend/uploads && chmod 777 /app/backend/assets && node run /app/backend/dist/index.js"]
 
 # Frontend Service
-FROM node:18 as frontend-build
+FROM node:20-alpine as frontend-build
 WORKDIR /app/frontend
 COPY Frontend/package*.json ./
 RUN npm install
