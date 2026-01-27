@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import dotenv from "dotenv";
 import express from "express";
 import AppDataSource from "./config/database";
 import bodyParser from "body-parser";
@@ -8,6 +9,9 @@ import { seedUsers } from "./config/seed";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createFunctions } from "./config/createFunctions";
+
+// Load environment variables first
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

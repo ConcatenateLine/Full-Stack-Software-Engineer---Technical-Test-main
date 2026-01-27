@@ -8,42 +8,42 @@ const UsersWithAvatars = `
       "phoneNumber" VARCHAR,
       "status" VARCHAR,
       "role" VARCHAR,
-      "address" JSON,
+      "address" JSONB,
       "avatar" TEXT
     ) AS $$
     BEGIN
       RETURN QUERY
       SELECT
-        "user"."id",
-        "user"."firstName",
-        "user"."lastName",
-        "user"."email",
-        "user"."phoneNumber",
-        "user"."status",
-        "role"."name" AS "role",
-        "user"."address",
+        "users"."id",
+        "users"."first_name" AS "firstName",
+        "users"."last_name" AS "lastName",
+        "users"."email",
+        "users"."phone_number" AS "phoneNumber",
+        "users"."status",
+        "roles"."name" AS "role",
+        "users"."address",
         CASE 
-          WHEN "user"."avatar" IS NULL OR "user"."avatar" = '' THEN DOMAIN || '/assets/placeholders/avatarPlaceHolder.webp'
-          ELSE CONCAT(DOMAIN, '/uploads/', "user"."avatar")
+          WHEN "users"."avatar" IS NULL OR "users"."avatar" = '' THEN DOMAIN || '/assets/placeholders/avatarPlaceHolder.webp'
+          ELSE CONCAT(DOMAIN, '/uploads/', "users"."avatar")
         END AS "avatar"
-      FROM "user"
-      LEFT JOIN "role" ON "user"."roleId" = "role"."id"
+      FROM "users"
+      LEFT JOIN "roles" ON "users"."role_id" = "roles"."id"
         WHERE
             CASE
-                WHEN SEARCH_FILTER IS NOT NULL THEN "user"."firstName" ILIKE '%' || SEARCH_FILTER || '%' OR "user"."lastName" ILIKE '%' || SEARCH_FILTER || '%' OR "user"."email" ILIKE '%' || SEARCH_FILTER || '%'
+                WHEN SEARCH_FILTER IS NOT NULL THEN "users"."first_name" ILIKE '%' || SEARCH_FILTER || '%' OR "users"."last_name" ILIKE '%' || SEARCH_FILTER || '%' OR "users"."email" ILIKE '%' || SEARCH_FILTER || '%'
                 ELSE TRUE
             END
         AND
             CASE
-              WHEN STATUS_FILTER IS NOT NULL THEN "user"."status" = STATUS_FILTER
+              WHEN STATUS_FILTER IS NOT NULL THEN "users"."status" = STATUS_FILTER
               ELSE TRUE
             END
         AND
             CASE
-              WHEN ROLE_FILTER IS NOT NULL THEN "role"."name" = ROLE_FILTER
+              WHEN ROLE_FILTER IS NOT NULL THEN "roles"."name" = ROLE_FILTER
               ELSE TRUE
             END
-        ORDER BY "user"."id" ASC
+        ORDER BY "users"."id" ASC
         LIMIT
             TAKE
         OFFSET

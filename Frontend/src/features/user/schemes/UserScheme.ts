@@ -13,7 +13,7 @@ const UserSchema = z.object({
       /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&#~^]{8,}$/,
       "Password must be at least 8 characters long, including one uppercase letter, one digit, and no special characters except @$!%*?&."
     ),
-  role: z.enum(["Admin", "User"]),
+  role: z.enum(["Admin", "User", "Manager", "Supplier", "Employee", "Customer"]),
   phoneNumber: z
     .string()
     .regex(

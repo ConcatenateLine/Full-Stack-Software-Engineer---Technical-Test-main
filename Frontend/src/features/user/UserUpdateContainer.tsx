@@ -57,7 +57,7 @@ const UserUpdateContainer = () => {
       lastName: user?.lastName ?? "",
       email: user?.email ?? "",
       password: user?.password ?? undefined,
-      role: user?.role ? (user.role as "Admin" | "User") : "User",
+      role: user?.role ? (user.role as "Admin" | "User" | "Manager" | "Supplier" | "Employee" | "Customer") : "User",
       phoneNumber: user?.phoneNumber ?? "",
       status: user?.status === "Active" ? "Active" : "Inactive",
       address: {
@@ -326,6 +326,10 @@ const UserUpdateContainer = () => {
                         <SelectContent>
                           <SelectItem value="User">User</SelectItem>
                           <SelectItem value="Admin">Admin</SelectItem>
+                          <SelectItem value="Manager">Manager</SelectItem>
+                          <SelectItem value="Supplier">Supplier</SelectItem>
+                          <SelectItem value="Employee">Employee</SelectItem>
+                          <SelectItem value="Customer">Customer</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

@@ -1,28 +1,50 @@
-# Build stage
-FROM node:20-alpine as builder
+# Use Bun as base image
+FROM oven/bun:1-alpine
+
+# Set working directory
 WORKDIR /app
-# Create uploads directory with proper permissions
-RUN mkdir -p /app/uploads && \
-    chmod 777 /app/uploads
 
-# Create assets directory with proper permissions
-RUN mkdir -p /app/assets && \
-    chmod 777 /app/assets
+# Install system dependencies for Sharp image processing
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    vips-dev
 
-COPY package*.json ./
-RUN npm install
+# Copy package files
+COPY package.json bun.lockb ./
+
+# Install dependencies (including dev dependencies for build)
+RUN bun install --frozen-lockfile
+
+# Copy source code
 COPY . .
-RUN npm run build
 
-# Production stage
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --production
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/uploads ./uploads
-COPY --from=builder /app/assets ./assets
+# Build the application
+RUN bun run build
 
-EXPOSE 8080
-CMD ["sh","-c","chmod 777 /app/uploads && chmod 777 /app/assets && node run dist/index.js"]
+# Remove dev dependencies after build
+RUN bun remove @types/bun @types/express @types/jsonwebtoken @types/multer @types/node @types/cors @types/body-parser tsc-alias tsx typescript --dev
+
+# Create non-root user for security (bun user already exists in base image)
+RUN addgroup -g 1001 -S appuser && \
+    adduser -S appuser -u 1001 -G bun
+
+# Change ownership of app directory first
+RUN chown -R appuser:bun /app
+
+# Switch to non-root user
+USER appuser
+
+# Create necessary directories as appuser
+RUN mkdir -p uploads assets
+
+# Expose port
+EXPOSE 8181
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD bun -e "fetch('http://localhost:8181/api/health').then(r=>process.exit(r.ok?0:1))"
+
+# Start the application
+CMD ["bun", "start"]

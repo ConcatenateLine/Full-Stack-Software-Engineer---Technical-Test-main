@@ -14,6 +14,6 @@ export default class TokenBlacklist extends BaseEntity {
   @Column("varchar", { length: 255 })
   token!: string;
 
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn({ name: "created_at", select: false })
   createdAt!: Date;
 }

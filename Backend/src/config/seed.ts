@@ -6,7 +6,8 @@ import Permission from "../features/auth/entities/Permission";
 
 async function generateRoles(dataSource: DataSource) {
   try {
-    const rolesFound = await Role.find();
+    const roleRepo = dataSource.getRepository(Role);
+    const rolesFound = await roleRepo.find();
     if (rolesFound.length > 0) {
       console.log("Roles already exist");
       return;
@@ -28,7 +29,7 @@ async function generateRoles(dataSource: DataSource) {
       return roleEntity;
     });
 
-    await dataSource.manager.save(roleEntities);
+    await roleRepo.save(roleEntities);
 
     console.log(`Successfully created ${roles.length} roles`);
   } catch (error) {
@@ -38,7 +39,9 @@ async function generateRoles(dataSource: DataSource) {
 
 async function generatePermissions(dataSource: DataSource) {
   try {
-    const permissionsFound = await Permission.find();
+    const permissionRepo = dataSource.getRepository(Permission);
+    const roleRepo = dataSource.getRepository(Role);
+    const permissionsFound = await permissionRepo.find();
     if (permissionsFound.length > 0) {
       console.log("Permissions already exist");
       return;
@@ -190,9 +193,9 @@ async function generatePermissions(dataSource: DataSource) {
       return permissionEntity;
     });
 
-    await dataSource.manager.save(permissionEntities);
+    await permissionRepo.save(permissionEntities);
 
-    const roles = await Role.find();
+    const roles = await roleRepo.find({ relations: { permissions: true } });
 
     const adminRole = roles.find((role) => role.name === "Admin");
     const userRole = roles.find((role) => role.name === "User");
@@ -259,12 +262,12 @@ async function generatePermissions(dataSource: DataSource) {
       return permission.name.includes("application:");
     });
 
-    await dataSource.manager.save(adminRole);
-    await dataSource.manager.save(managerRole);
-    await dataSource.manager.save(userRole);
-    await dataSource.manager.save(supplierRole);
-    await dataSource.manager.save(employeeRole);
-    await dataSource.manager.save(customerRole);
+    await roleRepo.save(adminRole);
+    await roleRepo.save(managerRole);
+    await roleRepo.save(userRole);
+    await roleRepo.save(supplierRole);
+    await roleRepo.save(employeeRole);
+    await roleRepo.save(customerRole);
 
     console.log(`Successfully created ${Permissions.length} permissions`);
   } catch (error) {
@@ -272,7 +275,7 @@ async function generatePermissions(dataSource: DataSource) {
   }
 }
 
-async function generateRandomUser(index: number): Promise<User> {
+async function generateRandomUser(index: number, roles: Role[]): Promise<User> {
   const firstNames = [
     "John",
     "Jane",
@@ -313,7 +316,6 @@ async function generateRandomUser(index: number): Promise<User> {
   )}`;
   const password = "password123";
   const status = Math.random() > 0.2 ? "Active" : "Inactive";
-  const roles = await Role.find();
   const role = roles[Math.floor(Math.random() * roles.length)];
 
   const user = new User();
@@ -338,15 +340,19 @@ async function generateRandomUser(index: number): Promise<User> {
 
 async function generateUsers(dataSource: DataSource) {
   try {
-    const usersFound = await User.find();
+    const userRepo = dataSource.getRepository(User);
+    const roleRepo = dataSource.getRepository(Role);
+    const usersFound = await userRepo.find();
     if (usersFound.length > 0) {
       console.log("Users already exist");
       return;
     }
 
+    const roles = await roleRepo.find();
+
     const users = [];
     for (let i = 0; i < 50; i++) {
-      const user = await generateRandomUser(i);
+      const user = await generateRandomUser(i, roles);
       users.push(user);
     }
 
@@ -357,7 +363,7 @@ async function generateUsers(dataSource: DataSource) {
     user.email = "GonzaloVinegas@gmail.com";
     user.phoneNumber = "+1234567890";
     user.status = "Active";
-    user.role = (await Role.findOne({ where: { name: "Admin" } })) as Role;
+    user.role = (await roleRepo.findOne({ where: { name: "Admin" } })) as Role;
     user.password = await bcrypt.hash("password123", 10);
     user.address = {
       street: "123 Main St",
@@ -368,7 +374,7 @@ async function generateUsers(dataSource: DataSource) {
       lng: ""
     };
     users.push(user);
-    await dataSource.manager.save(users);
+    await userRepo.save(users);
 
     console.log(`Successfully created ${users.length} users`);
   } catch (error) {

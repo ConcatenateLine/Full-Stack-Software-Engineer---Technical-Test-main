@@ -251,6 +251,38 @@ export const GenericPaginateTable = <T,>({
               >
                 Admin
               </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+              key="Manager"
+              className="capitalize"
+              checked={filters.role === "Manager"}
+              onCheckedChange={(_) => handleFiltersChange("role", "Manager")}
+              >
+                Manager
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+              key="Supplier"
+              className="capitalize"
+              checked={filters.role === "Supplier"}
+              onCheckedChange={(_) => handleFiltersChange("role", "Supplier")}
+              >
+                Supplier
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+              key="Employee"
+              className="capitalize"
+              checked={filters.role === "Employee"}
+              onCheckedChange={(_) => handleFiltersChange("role", "Employee")}
+              >
+                Employee
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+              key="Supplier"
+              className="capitalize"
+              checked={filters.role === "Customer"}
+              onCheckedChange={(_) => handleFiltersChange("role", "Customer")}
+              >
+                Customer
+              </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button

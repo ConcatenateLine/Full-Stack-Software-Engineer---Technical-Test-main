@@ -10,7 +10,7 @@ import User from "../../users/entities/User";
 import Permission from "./Permission";
 import { BaseEntity } from "typeorm";
 
-@Entity()
+@Entity("roles")
 export default class Role extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -21,7 +21,11 @@ export default class Role extends BaseEntity {
   @Column("varchar", { length: 100 })
   label!: string;
 
-  @JoinTable()
+  @JoinTable({
+    name: "role_permissions",
+    joinColumn: { name: "role_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "permission_id", referencedColumnName: "id" },
+  })
   @ManyToMany(() => Permission)
   permissions!: Permission[];
 

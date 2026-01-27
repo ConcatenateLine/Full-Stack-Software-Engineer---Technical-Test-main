@@ -293,6 +293,10 @@ const UserAddContainer = () => {
                       <SelectContent>
                         <SelectItem value="User">User</SelectItem>
                         <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Manager">Manager</SelectItem>
+                        <SelectItem value="Supplier">Supplier</SelectItem>
+                        <SelectItem value="Employee">Employee</SelectItem>
+                        <SelectItem value="Customer">Customer</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

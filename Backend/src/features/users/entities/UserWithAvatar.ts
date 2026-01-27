@@ -26,21 +26,21 @@ import type { Address } from "../../common/valueObjects/Address";
 @ViewEntity({
   expression: `
  SELECT
-	"user"."id" AS "id",
-	"user"."firstName" AS "firstName",
-	"user"."lastName" AS "lastName",
-	"user"."email" AS "email",
-	"user"."phoneNumber" AS "phoneNumber",
-	"user"."status" AS "status",
-	"user"."address" AS "address",
-	"role"."name" AS "role",
+	"users"."id" AS "id",
+	"users"."first_name" AS "firstName",
+	"users"."last_name" AS "lastName",
+	"users"."email" AS "email",
+	"users"."phone_number" AS "phoneNumber",
+	"users"."status" AS "status",
+	"users"."address" AS "address",
+	"roles"."name" AS "role",
 	CASE 
-        WHEN "user"."avatar" IS NULL OR "user"."avatar" = '' THEN NULL
-        ELSE CONCAT('http://localhost:8081/api', '/uploads/', "user"."avatar")
+        WHEN "users"."avatar" IS NULL OR "users"."avatar" = '' THEN NULL
+        ELSE CONCAT('http://localhost:8181/api', '/uploads/', "users"."avatar")
     END AS "avatar"
 FROM
-	"user"
-LEFT JOIN "role" ON "user"."roleId" = "role"."id"
+	"users"
+LEFT JOIN "roles" ON "users"."role_id" = "roles"."id"
     `,
 })
 export default class UserWithAvatar {

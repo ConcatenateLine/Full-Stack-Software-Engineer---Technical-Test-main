@@ -1,12 +1,11 @@
 import { DataSource } from "typeorm";
 import User from "../features/users/entities/User";
-import dotenv from "dotenv";
 import TokenBlacklist from "../features/auth/entities/TokenBlackList";
 import UserWithAvatar from "../features/users/entities/UserWithAvatar";
 import Permission from "../features/auth/entities/Permission";
 import Role from "../features/auth/entities/Role";
 
-dotenv.config();
+// Don't call dotenv.config() here - let index.ts handle it
 
 const AppDataSource = new DataSource({
   type: "postgres",
@@ -18,11 +17,11 @@ const AppDataSource = new DataSource({
   entities: [TokenBlacklist, Role, Permission, User, UserWithAvatar],
   // synchronize: true,
   // dropSchema: true,
-  logging: process.env.NODE_ENV === "development",
+  logging: process.env.NODE_ENV === "development" ? true : false,
   migrations:
     process.env.NODE_ENV === "development"
       ? ["src/config/migrations/*.ts"]
-      : ["src/config/migrations/*.js"],
+      : ["dist/config/migrations/*.js"],
   migrationsTableName: "migrations",
 });
 
